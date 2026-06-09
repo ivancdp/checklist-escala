@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Seu negócio está pronto para escalar? — Diário de um CEO</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #080808;
+      --surface: #111;
+      --surface2: #181818;
+      --border: #232323;
+      --green: #22c55e;
+      --yellow: #eab308;
+      --red: #ef4444;
+      --text: #f0f0f0;
+      --muted: #777;
+      --muted2: #444;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      padding: 64px 16px 80px;
+    }
+
+    .screen {
+      margin: auto 0;
+    }
+
+    /* ─── Screens ─── */
+    .screen {
+      display: none;
+      width: 100%;
+      max-width: 560px;
+      animation: fadeUp 0.35s ease forwards;
+    }
+    .screen.active { display: flex; flex-direction: column; }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(18px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── Progress bar ─── */
+    .progress-wrap {
+      margin-bottom: 40px;
+    }
+    .progress-meta {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      margin-bottom: 8px;
+      font-weight: 500;
+    }
+    .progress-bar {
+      height: 3px;
+      background: var(--border);
+      border-radius: 100px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: var(--text);
+      border-radius: 100px;
+      transition: width 0.4s ease;
+    }
+
+    /* ─── Question screen ─── */
+    .q-tag {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .q-text {
+      font-size: clamp(22px, 4vw, 30px);
+      font-weight: 800;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .q-sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 40px;
+    }
+
+    .answer-btns {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .answer-btn {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 18px 20px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      color: var(--text);
+      font-size: 15px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      transition: border-color 0.15s, background 0.15s;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .answer-btn:hover {
+      border-color: #444;
+      background: var(--surface2);
+    }
+
+    .answer-btn.yes { border-color: #16a34a50; }
+    .answer-btn.yes:hover { border-color: var(--green); background: #16a34a12; }
+
+    .answer-btn.no { border-color: #dc262640; }
+    .answer-btn.no:hover { border-color: var(--red); background: #dc262612; }
+
+    .answer-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      flex-shrink: 0;
+    }
+
+    .answer-btn.yes .answer-icon { background: #16a34a20; }
+    .answer-btn.no  .answer-icon { background: #dc262620; }
+
+    /* ─── Start screen ─── */
+    .brand {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    h1.hero {
+      font-size: clamp(30px, 6vw, 46px);
+      font-weight: 900;
+      line-height: 1.1;
+      letter-spacing: -0.04em;
+      margin-bottom: 20px;
+    }
+
+    h1.hero em {
+      font-style: normal;
+      color: var(--muted);
+    }
+
+    .hero-sub {
+      font-size: 16px;
+      color: var(--muted);
+      line-height: 1.75;
+      margin-bottom: 40px;
+      max-width: 480px;
+    }
+
+    .meta-row {
+      display: flex;
+      gap: 24px;
+      margin-bottom: 40px;
+    }
+
+    .meta-item {
+      font-size: 13px;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .meta-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--muted2);
+    }
+
+    /* ─── Buttons ─── */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      background: var(--text);
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      padding: 16px 32px;
+      border-radius: 100px;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      transition: opacity 0.15s, transform 0.1s;
+    }
+    .btn-primary:hover { opacity: 0.88; }
+    .btn-primary:active { transform: scale(0.98); }
+
+    .btn-ghost {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 600;
+      padding: 10px 0;
+      border: none;
+      cursor: pointer;
+      font-family: 'Inter', sans-serif;
+      margin-top: 16px;
+      transition: color 0.15s;
+    }
+    .btn-ghost:hover { color: var(--text); }
+
+    /* ─── Lead capture screen ─── */
+    .lead-tag {
+      display: inline-block;
+      background: #16a34a20;
+      color: var(--green);
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 5px 14px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .lead-heading {
+      font-size: clamp(24px, 4vw, 34px);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .lead-sub {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.7;
+      margin-bottom: 36px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-bottom: 16px;
+    }
+
+    .form-field {
+      position: relative;
+    }
+
+    .form-field label {
+      display: block;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .form-field input {
+      width: 100%;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 15px;
+      font-family: 'Inter', sans-serif;
+      padding: 15px 18px;
+      outline: none;
+      transition: border-color 0.15s;
+    }
+
+    .form-field input:focus { border-color: #555; }
+    .form-field input::placeholder { color: var(--muted2); }
+
+    .privacy-note {
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 12px;
+      text-align: center;
+      line-height: 1.6;
+    }
+
+    .field-error {
+      font-size: 12px;
+      color: var(--red);
+      margin-top: 6px;
+      display: none;
+      font-weight: 500;
+    }
+    .field-error.visible { display: block; }
+
+    .form-field input.invalid {
+      border-color: var(--red);
+    }
+
+    /* ─── Result screens ─── */
+    .result-header {
+      margin-bottom: 36px;
+    }
+
+    .result-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 6px 16px;
+      border-radius: 100px;
+      margin-bottom: 24px;
+    }
+
+    .badge-green { background: #16a34a20; color: var(--green); border: 1px solid #16a34a40; }
+    .badge-yellow { background: #ca930020; color: var(--yellow); border: 1px solid #ca930040; }
+    .badge-red { background: #dc262620; color: var(--red); border: 1px solid #dc262640; }
+
+    .result-score {
+      font-size: 72px;
+      font-weight: 900;
+      letter-spacing: -0.05em;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .result-score-label {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 20px;
+    }
+
+    .result-title {
+      font-size: clamp(22px, 4vw, 32px);
+      font-weight: 800;
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 12px;
+    }
+
+    .result-text {
+      font-size: 15px;
+      color: var(--muted);
+      line-height: 1.8;
+      margin-bottom: 32px;
+    }
+
+    /* Warning cards for low score */
+    .warning-section {
+      margin-bottom: 32px;
+    }
+
+    .warning-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--red);
+      margin-bottom: 12px;
+    }
+
+    .warning-card {
+      background: #dc262610;
+      border: 1px solid #dc262630;
+      border-radius: 12px;
+      padding: 16px 18px;
+      margin-bottom: 8px;
+    }
+
+    .warning-card-title {
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .warning-card-desc {
+      font-size: 13px;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+
+    /* Next steps for high score */
+    .steps-section {
+      margin-bottom: 32px;
+    }
+
+    .steps-label {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--green);
+      margin-bottom: 12px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .step-item:last-child { border-bottom: none; }
+
+    .step-num {
+      width: 26px;
+      height: 26px;
+      border-radius: 8px;
+      background: #16a34a20;
+      color: var(--green);
+      font-size: 12px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .step-text {
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--muted);
+    }
+    .step-text strong { color: var(--text); }
+
+    /* CTA final */
+    .cta-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 28px;
+      text-align: center;
+      margin-top: 8px;
+    }
+
+    .cta-box h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 8px;
+      letter-spacing: -0.02em;
+    }
+
+    .cta-box p {
+      font-size: 14px;
+      color: var(--muted);
+      margin-bottom: 20px;
+      line-height: 1.7;
+    }
+
+    .footer-sig {
+      text-align: center;
+      font-size: 12px;
+      color: var(--muted2);
+      margin-top: 40px;
+    }
+
+  </style>
+</head>
+<body>
+
+<!-- ══════════════════════════════════
+     TELA 0 — START
+════════════════════════════════════ -->
+<div class="screen active" id="screen-start">
+  <div class="brand">Diário de um CEO</div>
+  <h1 class="hero">Seu negócio está<br><em>pronto para escalar?</em></h1>
+  <p class="hero-sub">
+    10 perguntas. Sem enrolação. Você vai saber exatamente
+    onde está — e o que fazer antes de apertar o acelerador.
+  </p>
+  <div class="meta-row">
+    <div class="meta-item"><div class="meta-dot"></div> 10 perguntas</div>
+    <div class="meta-item"><div class="meta-dot"></div> ~3 minutos</div>
+    <div class="meta-item"><div class="meta-dot"></div> Resultado personalizado</div>
+  </div>
+  <button class="btn-primary" onclick="startQuiz()">
+    Começar agora →
+  </button>
+</div>
+
+<!-- ══════════════════════════════════
+     TELAS 1–10 — PERGUNTAS
+════════════════════════════════════ -->
+<div class="screen" id="screen-questions">
+  <div class="progress-wrap">
+    <div class="progress-meta">
+      <span id="progressLabel">Pergunta 1 de 10</span>
+      <span id="progressPct">10%</span>
+    </div>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+    </div>
+  </div>
+
+  <div class="q-tag" id="qTag">Gestão &amp; Operação</div>
+  <div class="q-text" id="qText"></div>
+  <div class="q-sub" id="qSub"></div>
+
+  <div class="answer-btns">
+    <button class="answer-btn yes" onclick="answer(true)">
+      <div class="answer-icon">✓</div>
+      Sim, isso é verdade no meu negócio
+    </button>
+    <button class="answer-btn no" onclick="answer(false)">
+      <div class="answer-icon">✕</div>
+      Ainda não, preciso trabalhar nisso
+    </button>
+  </div>
+
+  <button class="btn-ghost" onclick="goBack()">← Voltar</button>
+</div>
+
+<!-- ══════════════════════════════════
+     TELA 11 — LEAD CAPTURE
+════════════════════════════════════ -->
+<div class="screen" id="screen-lead">
+  <div class="lead-tag">✓ Checklist concluído</div>
+  <div class="lead-heading">Quase lá. Onde mando seu resultado?</div>
+  <p class="lead-sub">
+    Coloca seu nome e e-mail abaixo. Vou te enviar o resultado com uma análise
+    do que priorizar — e você entra na lista de quem recebe minha newsletter semanal sobre negócios.
+  </p>
+
+  <div class="form-group">
+    <div class="form-field">
+      <label>Primeiro nome</label>
+      <input type="text" id="inputName" placeholder="Ex: João" autocomplete="given-name" oninput="clearError('inputName')" />
+      <div class="field-error" id="errorName">Coloca seu nome para continuar.</div>
+    </div>
+    <div class="form-field">
+      <label>Seu melhor e-mail</label>
+      <input type="email" id="inputEmail" placeholder="joao@email.com" autocomplete="email" oninput="clearError('inputEmail')" />
+      <div class="field-error" id="errorEmail">E-mail inválido. Confere e tenta de novo.</div>
+    </div>
+  </div>
+
+  <button class="btn-primary" style="width:100%; justify-content:center;" onclick="submitLead()">
+    Ver meu resultado →
+  </button>
+  <p class="privacy-note">Sem spam. Só conteúdo que vale seu tempo. Cancele quando quiser.</p>
+</div>
+
+<!-- ══════════════════════════════════
+     TELA 12a — RESULTADO ALTO (7–10)
+════════════════════════════════════ -->
+<div class="screen" id="screen-result-high">
+  <div class="result-header">
+    <div class="result-badge badge-green">● Pronto para escalar</div>
+    <div class="result-score" id="scoreHigh" style="color: #22c55e">0</div>
+    <div class="result-score-label">de 10 sinais confirmados</div>
+    <div class="result-title">O acelerador está liberado.</div>
+    <p class="result-text">
+      Você tem as bases no lugar. Processos documentados, pessoas certas, clareza de número —
+      os elementos que a maioria dos fundadores pula estão aí. O que vem agora é sobre
+      execução, não sobre preparação.
+    </p>
+  </div>
+
+  <div class="steps-section">
+    <div class="steps-label">O que fazer agora</div>
+    <div class="step-item">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>Defina o próximo nível com número.</strong> Não "quero crescer" — qual é a meta específica nos próximos 90 dias?</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>Identifique o gargalo real.</strong> O que está impedindo o crescimento hoje: aquisição de cliente, entrega, ou time?</div>
+    </div>
+    <div class="step-item">
+      <div class="step-num">3</div>
+      <div class="step-text"><strong>Não complique.</strong> Fundadores prontos para escalar costumam criar complexidade desnecessária. Mantenha o foco no que já está funcionando.</div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <div style="font-size:28px; margin-bottom:12px;">✓</div>
+    <h3>Você já está na lista.</h3>
+    <p>Toda semana você vai receber uma análise sobre como fundadores pensam,
+    decidem e escalam. Sem papo motivacional. Só o que funciona.<br><br>
+    Confere sua caixa de entrada — o primeiro e-mail chega em breve.</p>
+  </div>
+
+  <p class="footer-sig" style="margin-top: 32px">Diário de um CEO · Ivan Damha</p>
+</div>
+
+<!-- ══════════════════════════════════
+     TELA 12b — RESULTADO MÉDIO (4–6)
+════════════════════════════════════ -->
+<div class="screen" id="screen-result-mid">
+  <div class="result-header">
+    <div class="result-badge badge-yellow">● Caminho certo, base incompleta</div>
+    <div class="result-score" id="scoreMid" style="color: #eab308">0</div>
+    <div class="result-score-label">de 10 sinais confirmados</div>
+    <div class="result-title">Você está na direção certa. Mas ainda não é hora.</div>
+    <p class="result-text">
+      Você tem consciência do que precisa — e isso já é mais do que a maioria.
+      O problema é que escalar agora vai amplificar os buracos que ainda existem.
+      Resolve as bases primeiro. O crescimento vai ser muito mais sólido.
+    </p>
+  </div>
+
+  <div class="warning-section">
+    <div class="warning-label">Antes de escalar, resolva isso</div>
+    <div class="warning-card">
+      <div class="warning-card-title">Se você ainda é o único que sabe entregar</div>
+      <div class="warning-card-desc">Documenta o processo hoje. Não amanhã. Enquanto você for insubstituível na operação, o negócio não escala — você escala junto, e você quebra primeiro.</div>
+    </div>
+    <div class="warning-card">
+      <div class="warning-card-title">Se você não sabe quanto custa adquirir um cliente</div>
+      <div class="warning-card-desc">Esse número é o GPS do seu crescimento. Sem ele, você não sabe se está ganhando ou perdendo em cada venda. Calcula antes de investir mais em aquisição.</div>
+    </div>
+    <div class="warning-card">
+      <div class="warning-card-title">Se o motivo de querer escalar é resolver um problema financeiro agora</div>
+      <div class="warning-card-desc">Escalar um negócio com problema de caixa não resolve o problema — escala ele. Arrumar a casa primeiro não é fraqueza. É o movimento mais inteligente que você pode fazer.</div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <div style="font-size:28px; margin-bottom:12px;">✓</div>
+    <h3>Você já está na lista.</h3>
+    <p>Toda semana você vai receber uma análise sobre os erros que mais vejo em
+    fundadores nessa fase — e o que os que passaram fizeram diferente.<br><br>
+    Confere sua caixa de entrada — o primeiro e-mail chega em breve.</p>
+  </div>
+
+  <p class="footer-sig" style="margin-top: 32px">Diário de um CEO · Ivan Damha</p>
+</div>
+
+<!-- ══════════════════════════════════
+     TELA 12c — RESULTADO BAIXO (0–3)
+════════════════════════════════════ -->
+<div class="screen" id="screen-result-low">
+  <div class="result-header">
+    <div class="result-badge badge-red">● Ainda não é hora</div>
+    <div class="result-score" id="scoreLow" style="color: #ef4444">0</div>
+    <div class="result-score-label">de 10 sinais confirmados</div>
+    <div class="result-title">Honestidade vale mais do que otimismo aqui.</div>
+    <p class="result-text">
+      Você ainda está construindo as bases — e tudo bem. O problema não é onde você está.
+      O problema é apertar o acelerador antes de ter estrutura para isso.
+      Fundadores que escalam cedo demais não crescem mais rápido. Eles quebram mais rápido.
+    </p>
+  </div>
+
+  <div class="warning-section">
+    <div class="warning-label">Os três pontos que travam tudo</div>
+    <div class="warning-card">
+      <div class="warning-card-title">Você ainda é o único que sabe entregar</div>
+      <div class="warning-card-desc">Enquanto o negócio depender só de você, ele tem teto. Esse é o primeiro nó a desatar — documente, treine, delegue.</div>
+    </div>
+    <div class="warning-card">
+      <div class="warning-card-title">Você não sabe quanto custa adquirir um cliente</div>
+      <div class="warning-card-desc">Sem esse número, qualquer investimento em crescimento é aposta. Mede isso primeiro. É simples e muda tudo.</div>
+    </div>
+    <div class="warning-card">
+      <div class="warning-card-title">Você quer escalar para resolver um problema financeiro agora</div>
+      <div class="warning-card-desc">Se o negócio está com problema de caixa, escalar vai amplificar o problema. Estabiliza primeiro, escala depois.</div>
+    </div>
+  </div>
+
+  <div class="cta-box">
+    <div style="font-size:28px; margin-bottom:12px;">✓</div>
+    <h3>Você já está na lista.</h3>
+    <p>Toda semana você vai receber conteúdo específico para essa fase —
+    o que priorizar, o que ignorar, e o que a maioria faz errado aqui.<br><br>
+    Confere sua caixa de entrada — o primeiro e-mail chega em breve.</p>
+  </div>
+
+  <p class="footer-sig" style="margin-top: 32px">Diário de um CEO · Ivan Damha</p>
+</div>
+
+<script>
+  const questions = [
+    {
+      tag: "Financeiro",
+      text: "Você sabe exatamente de onde vem cada real de receita?",
+      sub: "Canal de venda, tipo de cliente, ticket médio. Sem esse mapa, qualquer crescimento é no escuro."
+    },
+    {
+      tag: "Clareza do negócio",
+      text: "Você consegue explicar o que o seu negócio faz em uma frase?",
+      sub: "Se precisar de dois parágrafos, o problema não é a explicação. É que o negócio ainda não está claro nem pra você."
+    },
+    {
+      tag: "Processos",
+      text: "Os processos principais do seu negócio estão documentados?",
+      sub: "Se o negócio depende de você lembrar de tudo, ele não está pronto para escalar. Documenta primeiro, acelera depois."
+    },
+    {
+      tag: "Time",
+      text: "Você já fez as contratações certas antes de precisar delas?",
+      sub: "Fundador que contrata com urgência, contrata errado. As pessoas certas entram antes do crescimento — não no meio do caos."
+    },
+    {
+      tag: "Mentalidade",
+      text: "Você pensa em sistemas e processos — não em tarefas?",
+      sub: "A diferença entre fundador e funcionário do próprio negócio está aqui. Você está construindo um processo ou apagando incêndio?"
+    },
+    {
+      tag: "Autonomia operacional",
+      text: "Se você sumir por duas semanas, o negócio continua funcionando?",
+      sub: "Esse é o teste mais honesto que existe. Se o telefone toca toda hora quando você some, o negócio depende de você demais."
+    },
+    {
+      tag: "Saúde financeira",
+      text: "Você tem margem para contratar antes de precisar de receita extra?",
+      sub: "Escalar consome caixa antes de gerar caixa. Sem folga financeira para absorver isso, o crescimento sufoca o negócio."
+    },
+    {
+      tag: "Metas",
+      text: "Você tem uma meta específica com número, prazo e ação definida?",
+      sub: "Não “quero crescer” — exatamente qual métrica, quanto, em quanto tempo, e o que muda na operação para chegar lá."
+    },
+    {
+      tag: "Aprendizado",
+      text: "Você já errou pelo menos uma vez e sabe o que não vai repetir?",
+      sub: "Fundador que não errou ainda, não testou o suficiente. O erro documentado é ativo. O erro esquecido vai voltar."
+    },
+    {
+      tag: "Visão de crescimento",
+      text: "Você pensa no crescimento do negócio mesmo fora do horário de trabalho?",
+      sub: "Não é sobre trabalhar mais horas. É sobre ter o negócio como um problema que você quer resolver — não como fardo que quer largar."
+    }
+  ];
+
+  let current = 0;
+  let answers = [];
+  let userName = '';
+
+  function showScreen(id) {
+    document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    el.classList.add('active');
+    // re-trigger animation
+    el.style.animation = 'none';
+    el.offsetHeight;
+    el.style.animation = '';
+  }
+
+  function startQuiz() {
+    current = 0;
+    answers = [];
+    renderQuestion();
+    showScreen('screen-questions');
+  }
+
+  function renderQuestion() {
+    const q = questions[current];
+    const num = current + 1;
+    const pct = Math.round((num / questions.length) * 100);
+
+    document.getElementById('progressLabel').textContent = `Pergunta ${num} de ${questions.length}`;
+    document.getElementById('progressPct').textContent = `${pct}%`;
+    document.getElementById('progressFill').style.width = pct + '%';
+    document.getElementById('qTag').textContent = q.tag;
+    document.getElementById('qText').textContent = q.text;
+    document.getElementById('qSub').textContent = q.sub;
+  }
+
+  function answer(val) {
+    answers[current] = val;
+    if (current < questions.length - 1) {
+      current++;
+      renderQuestion();
+    } else {
+      showScreen('screen-lead');
+    }
+  }
+
+  function goBack() {
+    if (current > 0) {
+      current--;
+      renderQuestion();
+    } else {
+      showScreen('screen-start');
+    }
+  }
+
+  function clearError(fieldId) {
+    const input = document.getElementById(fieldId);
+    const errorId = fieldId === 'inputName' ? 'errorName' : 'errorEmail';
+    input.classList.remove('invalid');
+    document.getElementById(errorId).classList.remove('visible');
+  }
+
+  function showError(fieldId, errorId) {
+    const input = document.getElementById(fieldId);
+    input.classList.add('invalid');
+    document.getElementById(errorId).classList.add('visible');
+    input.focus();
+  }
+
+  function isValidEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email);
+  }
+
+  function submitLead() {
+    const name = document.getElementById('inputName').value.trim();
+    const email = document.getElementById('inputEmail').value.trim();
+
+    let hasError = false;
+
+    if (!name) {
+      showError('inputName', 'errorName');
+      hasError = true;
+    }
+    if (!email || !isValidEmail(email)) {
+      showError('inputEmail', 'errorEmail');
+      hasError = true;
+    }
+    if (hasError) return;
+
+    userName = name;
+    const score = answers.filter(a => a === true).length;
+
+    // Atualiza scores nas telas de resultado
+    ['scoreHigh', 'scoreMid', 'scoreLow'].forEach(id => {
+      document.getElementById(id).textContent = score;
+    });
+
+    // Envia inscrição para Beehiiv via Make webhook em segundo plano
+    fetch('https://hook.us2.make.com/xh4r8imwfyu1jft10hsipttlr5zn1hkk', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email: email, name: name })
+    }).catch(() => {}); // falha silenciosa — resultado aparece de qualquer forma
+
+    // Mostra resultado imediatamente
+    if (score >= 7) {
+      showScreen('screen-result-high');
+    } else if (score >= 4) {
+      showScreen('screen-result-mid');
+    } else {
+      showScreen('screen-result-low');
+    }
+  }
+
+  function goToNewsletter() {
+    window.open('https://quemquerdaumjeito.beehiiv.com/subscribe', '_blank');
+  }
+</script>
+</body>
+</html>
