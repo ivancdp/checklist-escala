@@ -117,6 +117,51 @@
       .card-right { display: none; }
       .card-title { white-space: normal; }
     }
+
+    /* Editor panel toggle */
+    .top-row { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
+    .editor-toggle-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 100px;
+      border: 1px solid #ef444440; background: #ef444415;
+      color: var(--red); font-size: 13px; font-weight: 700;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all .15s;
+    }
+    .editor-toggle-btn:hover { background: #ef444425; }
+    .editor-toggle-btn.active { background: var(--red); color: #fff; border-color: transparent; }
+
+    /* Editor panel */
+    .editor-panel { display: none; }
+    .editor-panel.active { display: block; }
+    .editor-hint { font-size: 13px; color: var(--muted); margin-bottom: 18px; line-height: 1.6; }
+    .editor-list { display: flex; flex-direction: column; gap: 8px; }
+    .editor-row {
+      display: flex; align-items: center; gap: 14px;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 14px 16px; cursor: grab;
+    }
+    .editor-row.dragging { opacity: .35; }
+    .editor-priority {
+      width: 30px; height: 30px; border-radius: 8px; flex-shrink: 0;
+      background: var(--muted2); color: var(--text);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 800;
+    }
+    .editor-grip { color: var(--muted); font-size: 18px; line-height: 1; flex-shrink: 0; cursor: grab; }
+    .editor-tag { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
+    .editor-tag.ceo          { background: #f0f0f020; color: var(--text);   border: 1px solid #f0f0f040; }
+    .editor-tag.ivan-videos  { background: #a855f720; color: var(--purple); border: 1px solid #a855f740; }
+    .editor-tag.ivan-lives   { background: #3b82f620; color: var(--blue);   border: 1px solid #3b82f640; }
+    .editor-body { flex: 1; min-width: 0; }
+    .editor-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 3px; }
+    .editor-meta { font-size: 12px; color: var(--muted); }
+    .editor-empty { color: var(--muted); font-size: 13px; padding: 30px 0; text-align: center; }
+
+    @media (max-width: 580px) {
+      .editor-row { flex-wrap: wrap; }
+      .editor-body { flex-basis: 100%; order: 1; }
+    }
   </style>
 </head>
 <body>
@@ -124,11 +169,14 @@
 
   <div class="top">
     <div class="brand">Ivan Damha</div>
-    <h1>Programação de Conteúdo</h1>
+    <div class="top-row">
+      <h1>Programação de Conteúdo</h1>
+      <button class="editor-toggle-btn" id="editorToggleBtn" onclick="toggleEditorPanel()">🎬 Painel do Editor</button>
+    </div>
   </div>
 
   <!-- Channel selector -->
-  <div class="channel-bar">
+  <div class="channel-bar" id="channelBar">
     <button class="ch-btn c1 active" onclick="setChannel('ceo')">
       <div class="ch-dot"></div> Diário de um CEO — Vídeos
     </button>
@@ -141,7 +189,7 @@
   </div>
 
   <!-- Stats -->
-  <div class="stats">
+  <div class="stats" id="stats">
     <div class="stat-box"><div class="stat-num" id="s-done" style="color:var(--green)">0</div><div class="stat-label">Publicados</div></div>
     <div class="stat-box"><div class="stat-num" id="s-editing" style="color:var(--yellow)">0</div><div class="stat-label">Em edição</div></div>
     <div class="stat-box"><div class="stat-num" id="s-scheduled" style="color:var(--blue)">0</div><div class="stat-label">Agendados</div></div>
@@ -149,6 +197,12 @@
   </div>
 
   <div class="grid" id="grid"></div>
+
+  <!-- Editor panel -->
+  <div class="editor-panel" id="editorPanel">
+    <div class="editor-hint">Fila de edição — arraste os cards para reordenar a prioridade de entrega. O vídeo do topo é o mais urgente.</div>
+    <div class="editor-list" id="editorList"></div>
+  </div>
 </div>
 
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -303,8 +357,128 @@ db.ref('status').on('value', snapshot => {
       });
     });
   });
-  render();
+  if (editorPanelOpen) renderEditor();
+  else render();
 });
+
+// ─────────────────────────────────────────────
+// PAINEL DO EDITOR
+// ─────────────────────────────────────────────
+let editorPanelOpen = false;
+let editorOrder = [];
+
+const channelTagLabels = {
+  'ceo': 'Diário de um CEO',
+  'ivan-videos': 'Ivan Damha',
+  'ivan-lives': 'Ivan Damha (Live)'
+};
+
+db.ref('editorOrder').on('value', snapshot => {
+  editorOrder = snapshot.val() || [];
+  if (editorPanelOpen) renderEditor();
+});
+
+function toggleEditorPanel() {
+  editorPanelOpen = !editorPanelOpen;
+  const btn = document.getElementById('editorToggleBtn');
+  document.getElementById('channelBar').style.display = editorPanelOpen ? 'none' : '';
+  document.getElementById('stats').style.display = editorPanelOpen ? 'none' : '';
+  document.getElementById('grid').style.display = editorPanelOpen ? 'none' : '';
+  document.getElementById('editorPanel').classList.toggle('active', editorPanelOpen);
+  btn.classList.toggle('active', editorPanelOpen);
+  btn.textContent = editorPanelOpen ? '← Voltar' : '🎬 Painel do Editor';
+  if (editorPanelOpen) renderEditor();
+}
+
+function getEditingItems() {
+  const items = [];
+  Object.entries(channels).forEach(([chKey, ch]) => {
+    ch.phases.forEach((phase, pi) => {
+      phase.items.forEach((item, ii) => {
+        if (item.status === 'editing') {
+          items.push({ key: `${chKey}__${pi}__${ii}`, chKey, item });
+        }
+      });
+    });
+  });
+  items.sort((a, b) => {
+    let ia = editorOrder.indexOf(a.key); if (ia === -1) ia = 9999;
+    let ib = editorOrder.indexOf(b.key); if (ib === -1) ib = 9999;
+    return ia - ib;
+  });
+  return items;
+}
+
+function renderEditor() {
+  const list = document.getElementById('editorList');
+  const items = getEditingItems();
+  list.innerHTML = '';
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="editor-empty">Nenhum vídeo na fila de edição no momento.</div>';
+    return;
+  }
+
+  items.forEach((it, idx) => {
+    const row = document.createElement('div');
+    row.className = 'editor-row';
+    row.draggable = true;
+    row.dataset.key = it.key;
+    row.innerHTML = `
+      <div class="editor-priority">${idx + 1}</div>
+      <div class="editor-grip">⠿⠿</div>
+      <span class="editor-tag ${it.chKey}">${channelTagLabels[it.chKey]}</span>
+      <div class="editor-body">
+        <div class="editor-title">${it.item.title}</div>
+        <div class="editor-meta">📅 ${it.item.date}${it.item.notes ? ' · 📝 ' + it.item.notes : ''}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
+
+  attachDragHandlers();
+}
+
+let dragSrc = null;
+
+function attachDragHandlers() {
+  const list = document.getElementById('editorList');
+  list.querySelectorAll('.editor-row').forEach(row => {
+    row.addEventListener('dragstart', () => {
+      dragSrc = row;
+      setTimeout(() => row.classList.add('dragging'), 0);
+    });
+    row.addEventListener('dragend', () => {
+      row.classList.remove('dragging');
+      saveEditorOrder();
+    });
+  });
+
+  list.addEventListener('dragover', e => {
+    e.preventDefault();
+    if (!dragSrc) return;
+    const after = getDragAfterElement(list, e.clientY);
+    if (after == null) list.appendChild(dragSrc);
+    else list.insertBefore(dragSrc, after);
+  });
+}
+
+function getDragAfterElement(container, y) {
+  const els = [...container.querySelectorAll('.editor-row:not(.dragging)')];
+  return els.reduce((closest, child) => {
+    const box = child.getBoundingClientRect();
+    const offset = y - box.top - box.height / 2;
+    if (offset < 0 && offset > closest.offset) return { offset, element: child };
+    return closest;
+  }, { offset: -Infinity }).element;
+}
+
+function saveEditorOrder() {
+  const order = [...document.querySelectorAll('#editorList .editor-row')].map(r => r.dataset.key);
+  document.querySelectorAll('#editorList .editor-priority').forEach((el, i) => el.textContent = i + 1);
+  editorOrder = order;
+  db.ref('editorOrder').set(order);
+}
 
 // ─────────────────────────────────────────────
 // RENDER
