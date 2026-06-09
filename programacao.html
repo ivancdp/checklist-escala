@@ -151,7 +151,24 @@
   <div class="grid" id="grid"></div>
 </div>
 
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
 <script>
+// ─────────────────────────────────────────────
+// FIREBASE
+// ─────────────────────────────────────────────
+const firebaseConfig = {
+  apiKey: "AIzaSyBfel1GJVUxmEFvkW0QPOqBJH15hCs7r6o",
+  authDomain: "dashboard-video-2f8d5.firebaseapp.com",
+  databaseURL: "https://dashboard-video-2f8d5-default-rtdb.firebaseio.com",
+  projectId: "dashboard-video-2f8d5",
+  storageBucket: "dashboard-video-2f8d5.firebasestorage.app",
+  messagingSenderId: "1021428139813",
+  appId: "1:1021428139813:web:6faa8ff60a9f880edabccc"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ─────────────────────────────────────────────
 // DADOS
 // ─────────────────────────────────────────────
@@ -271,24 +288,23 @@ const statusMeta = {
   pending:   { text: '○ Pendente',   cls: 'pending' }
 };
 
-function storageKey(channel, phase, idx) {
-  return `status__${channel}__${phase}__${idx}`;
+function saveStatus(chKey, pi, ii, status) {
+  db.ref(`status/${chKey}/${pi}/${ii}`).set(status);
 }
 
-function loadAllStatuses() {
+// Escuta mudanças em tempo real e re-renderiza
+db.ref('status').on('value', snapshot => {
+  const data = snapshot.val() || {};
   Object.entries(channels).forEach(([chKey, ch]) => {
     ch.phases.forEach((phase, pi) => {
       phase.items.forEach((item, ii) => {
-        const saved = localStorage.getItem(storageKey(chKey, pi, ii));
-        if (saved) item.status = saved;
+        const saved = data?.[chKey]?.[pi]?.[ii];
+        item.status = saved || item.status;
       });
     });
   });
-}
-
-function saveStatus(chKey, pi, ii, status) {
-  localStorage.setItem(storageKey(chKey, pi, ii), status);
-}
+  render();
+});
 
 // ─────────────────────────────────────────────
 // RENDER
@@ -395,7 +411,6 @@ function changeStatus(e, chKey, pi, ii, status) {
   });
 }
 
-loadAllStatuses();
 render();
 </script>
 </body>
