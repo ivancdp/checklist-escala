@@ -10,7 +10,7 @@
     :root {
       --bg: #080808; --surface: #111; --surface2: #181818; --border: #222;
       --green: #22c55e; --yellow: #eab308; --blue: #3b82f6; --purple: #a855f7;
-      --red: #ef4444; --muted: #666; --muted2: #333; --text: #f0f0f0;
+      --red: #ef4444; --muted: #666; --muted2: #333; --text: #f0f0f0; --teal: #14b8a6;
     }
     body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 40px 20px 80px; }
     .wrapper { max-width: 900px; margin: 0 auto; }
@@ -67,6 +67,7 @@
     .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 14px 0 0 14px; }
     .card.done    { border-color: #16a34a30; } .card.done::before    { background: var(--green); }
     .card.editing { border-color: #ca930030; } .card.editing::before { background: var(--yellow); }
+    .card.awaiting { border-color: #14b8a630; } .card.awaiting::before { background: var(--teal); }
     .card.scheduled { border-color: #3b82f630; } .card.scheduled::before { background: var(--blue); }
     .card.pending { border-color: var(--border); } .card.pending::before { background: var(--muted2); }
     .card:hover { border-color: #3a3a3a; }
@@ -78,6 +79,7 @@
     }
     .card.done     .week-num { background: #16a34a20; color: var(--green); }
     .card.editing  .week-num { background: #ca930020; color: var(--yellow); }
+    .card.awaiting .week-num { background: #14b8a620; color: var(--teal); }
     .card.scheduled .week-num { background: #3b82f620; color: var(--blue); }
     .card.pending  .week-num { background: var(--muted2); color: var(--muted); }
 
@@ -91,6 +93,7 @@
     .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
     .badge.done      { background: #16a34a20; color: var(--green);  border: 1px solid #16a34a40; }
     .badge.editing   { background: #ca930020; color: var(--yellow); border: 1px solid #ca930040; }
+    .badge.awaiting  { background: #14b8a620; color: var(--teal);   border: 1px solid #14b8a640; }
     .badge.scheduled { background: #3b82f620; color: var(--blue);   border: 1px solid #3b82f640; }
     .badge.pending   { background: var(--muted2); color: var(--muted); border: 1px solid #333; }
     .pub-date { font-size: 12px; color: var(--muted); }
@@ -108,6 +111,7 @@
     .toggle-btn { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
     .toggle-btn:hover { border-color: #555; color: var(--text); }
     .toggle-btn.active-done      { background: #16a34a20; color: var(--green);  border-color: #16a34a40; }
+    .toggle-btn.active-awaiting  { background: #14b8a620; color: var(--teal);   border-color: #14b8a640; }
     .toggle-btn.active-editing   { background: #ca930020; color: var(--yellow); border-color: #ca930040; }
     .toggle-btn.active-scheduled { background: #3b82f620; color: var(--blue);   border-color: #3b82f640; }
     .toggle-btn.active-pending   { background: var(--muted2); color: var(--muted); border-color: #444; }
@@ -157,6 +161,19 @@
     .editor-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 3px; }
     .editor-meta { font-size: 12px; color: var(--muted); }
     .editor-empty { color: var(--muted); font-size: 13px; padding: 30px 0; text-align: center; }
+    .editor-finish-btn {
+      font-size: 11px; font-weight: 700; padding: 7px 14px; border-radius: 100px;
+      border: 1px solid #14b8a640; background: #14b8a615; color: var(--teal);
+      cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0;
+      transition: background .15s;
+    }
+    .editor-finish-btn:hover { background: #14b8a630; }
+    .editor-section-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); margin: 32px 0 10px;
+      display: flex; align-items: center; gap: 10px;
+    }
+    .editor-section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
     @media (max-width: 580px) {
       .editor-row { flex-wrap: wrap; }
@@ -192,6 +209,7 @@
   <div class="stats" id="stats">
     <div class="stat-box"><div class="stat-num" id="s-done" style="color:var(--green)">0</div><div class="stat-label">Publicados</div></div>
     <div class="stat-box"><div class="stat-num" id="s-editing" style="color:var(--yellow)">0</div><div class="stat-label">Em edição</div></div>
+    <div class="stat-box"><div class="stat-num" id="s-awaiting" style="color:var(--teal)">0</div><div class="stat-label">Aguard. publicação</div></div>
     <div class="stat-box"><div class="stat-num" id="s-scheduled" style="color:var(--blue)">0</div><div class="stat-label">Agendados</div></div>
     <div class="stat-box"><div class="stat-num" id="s-pending" style="color:var(--muted)">0</div><div class="stat-label">Pendentes</div></div>
   </div>
@@ -202,6 +220,9 @@
   <div class="editor-panel" id="editorPanel">
     <div class="editor-hint">Fila de edição — arraste os cards para reordenar a prioridade de entrega. O vídeo do topo é o mais urgente.</div>
     <div class="editor-list" id="editorList"></div>
+
+    <div class="editor-section-label">Vídeos editados — aguardando publicação</div>
+    <div class="editor-list" id="awaitingList"></div>
   </div>
 </div>
 
@@ -337,6 +358,7 @@ let currentChannel = 'ceo';
 
 const statusMeta = {
   done:      { text: '✓ Publicado',  cls: 'done' },
+  awaiting:  { text: '🕒 Aguardando publicação', cls: 'awaiting' },
   editing:   { text: '✂ Em edição', cls: 'editing' },
   scheduled: { text: '📅 Agendado',  cls: 'scheduled' },
   pending:   { text: '○ Pendente',   cls: 'pending' }
@@ -357,7 +379,7 @@ db.ref('status').on('value', snapshot => {
       });
     });
   });
-  if (editorPanelOpen) renderEditor();
+  if (editorPanelOpen) { renderEditor(); renderAwaitingList(); }
   else render();
 });
 
@@ -387,7 +409,7 @@ function toggleEditorPanel() {
   document.getElementById('editorPanel').classList.toggle('active', editorPanelOpen);
   btn.classList.toggle('active', editorPanelOpen);
   btn.textContent = editorPanelOpen ? '← Voltar' : '🎬 Painel do Editor';
-  if (editorPanelOpen) renderEditor();
+  if (editorPanelOpen) { renderEditor(); renderAwaitingList(); }
 }
 
 function getEditingItems() {
@@ -396,7 +418,7 @@ function getEditingItems() {
     ch.phases.forEach((phase, pi) => {
       phase.items.forEach((item, ii) => {
         if (item.status === 'editing') {
-          items.push({ key: `${chKey}__${pi}__${ii}`, chKey, item });
+          items.push({ key: `${chKey}__${pi}__${ii}`, chKey, pi, ii, item });
         }
       });
     });
@@ -407,6 +429,27 @@ function getEditingItems() {
     return ia - ib;
   });
   return items;
+}
+
+function getAwaitingItems() {
+  const items = [];
+  Object.entries(channels).forEach(([chKey, ch]) => {
+    ch.phases.forEach((phase, pi) => {
+      phase.items.forEach((item, ii) => {
+        if (item.status === 'awaiting') {
+          items.push({ chKey, pi, ii, item });
+        }
+      });
+    });
+  });
+  return items;
+}
+
+function finishEditing(chKey, pi, ii) {
+  channels[chKey].phases[pi].items[ii].status = 'awaiting';
+  saveStatus(chKey, pi, ii, 'awaiting');
+  renderEditor();
+  renderAwaitingList();
 }
 
 function renderEditor() {
@@ -432,11 +475,36 @@ function renderEditor() {
         <div class="editor-title">${it.item.title}</div>
         <div class="editor-meta">📅 ${it.item.date}${it.item.notes ? ' · 📝 ' + it.item.notes : ''}</div>
       </div>
+      <button class="editor-finish-btn" onclick="finishEditing('${it.chKey}',${it.pi},${it.ii})">✓ Edição finalizada</button>
     `;
     list.appendChild(row);
   });
 
   attachDragHandlers();
+}
+
+function renderAwaitingList() {
+  const list = document.getElementById('awaitingList');
+  const items = getAwaitingItems();
+  list.innerHTML = '';
+
+  if (items.length === 0) {
+    list.innerHTML = '<div class="editor-empty">Nenhum vídeo aguardando publicação no momento.</div>';
+    return;
+  }
+
+  items.forEach(it => {
+    const row = document.createElement('div');
+    row.className = 'editor-row';
+    row.innerHTML = `
+      <span class="editor-tag ${it.chKey}">${channelTagLabels[it.chKey]}</span>
+      <div class="editor-body">
+        <div class="editor-title">${it.item.title}</div>
+        <div class="editor-meta">📅 ${it.item.date}</div>
+      </div>
+    `;
+    list.appendChild(row);
+  });
 }
 
 let dragSrc = null;
@@ -496,14 +564,16 @@ function render() {
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  let done = 0, editing = 0, scheduled = 0, pending = 0;
+  let done = 0, awaiting = 0, editing = 0, scheduled = 0, pending = 0;
   ch.phases.forEach(p => p.items.forEach(i => {
     if (i.status === 'done') done++;
+    else if (i.status === 'awaiting') awaiting++;
     else if (i.status === 'editing') editing++;
     else if (i.status === 'scheduled') scheduled++;
     else pending++;
   }));
   document.getElementById('s-done').textContent = done;
+  document.getElementById('s-awaiting').textContent = awaiting;
   document.getElementById('s-editing').textContent = editing;
   document.getElementById('s-scheduled').textContent = scheduled;
   document.getElementById('s-pending').textContent = pending;
