@@ -3,577 +3,400 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Programação — Diário de um CEO</title>
+  <title>Programação de Conteúdo</title>
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
     :root {
-      --bg: #080808;
-      --surface: #111;
-      --surface2: #181818;
-      --border: #222;
-      --green: #22c55e;
-      --yellow: #eab308;
-      --blue: #3b82f6;
-      --muted: #666;
-      --muted2: #333;
-      --text: #f0f0f0;
+      --bg: #080808; --surface: #111; --surface2: #181818; --border: #222;
+      --green: #22c55e; --yellow: #eab308; --blue: #3b82f6; --purple: #a855f7;
+      --red: #ef4444; --muted: #666; --muted2: #333; --text: #f0f0f0;
     }
-
-    body {
-      background: var(--bg);
-      color: var(--text);
-      font-family: 'Inter', sans-serif;
-      min-height: 100vh;
-      padding: 40px 20px 80px;
-    }
-
-    .wrapper { max-width: 860px; margin: 0 auto; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; min-height: 100vh; padding: 40px 20px 80px; }
+    .wrapper { max-width: 900px; margin: 0 auto; }
 
     /* Header */
-    .header {
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      margin-bottom: 40px;
-      gap: 20px;
-      flex-wrap: wrap;
+    .top { margin-bottom: 32px; }
+    .brand { font-size: 11px; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; color: var(--muted); margin-bottom: 10px; }
+    h1 { font-size: 26px; font-weight: 800; letter-spacing: -.03em; margin-bottom: 20px; }
+
+    /* Channel selector */
+    .channel-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 32px; }
+    .ch-btn {
+      display: flex; align-items: center; gap: 8px;
+      padding: 10px 18px; border-radius: 100px;
+      border: 1px solid var(--border); background: var(--surface);
+      color: var(--muted); font-size: 13px; font-weight: 600;
+      cursor: pointer; font-family: 'Inter', sans-serif;
+      transition: all .15s;
     }
+    .ch-btn:hover { border-color: #444; color: var(--text); }
+    .ch-btn.active { color: #000; border-color: transparent; }
+    .ch-btn.c1.active { background: var(--text); }
+    .ch-btn.c2v.active { background: var(--purple); color: #fff; }
+    .ch-btn.c2l.active { background: var(--blue); color: #fff; }
+    .ch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+    .c1 .ch-dot  { background: var(--text); }
+    .c2v .ch-dot { background: var(--purple); }
+    .c2l .ch-dot { background: var(--blue); }
+    .ch-btn.active .ch-dot { background: rgba(255,255,255,.5); }
+    .ch-btn.c1.active .ch-dot { background: #000; }
 
-    .brand {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 8px;
+    /* Stats */
+    .stats { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 32px; }
+    .stat-box { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 12px 18px; text-align: center; min-width: 80px; }
+    .stat-num { font-size: 22px; font-weight: 800; letter-spacing: -.03em; margin-bottom: 2px; }
+    .stat-label { font-size: 10px; color: var(--muted); font-weight: 600; text-transform: uppercase; letter-spacing: .08em; }
+
+    /* Phase label */
+    .phase-label {
+      font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
+      color: var(--muted); margin: 24px 0 10px;
+      display: flex; align-items: center; gap: 10px;
     }
+    .phase-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-    h1 {
-      font-size: 28px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-    }
-
-    .stats {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .stat-box {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 20px;
-      text-align: center;
-      min-width: 90px;
-    }
-
-    .stat-num {
-      font-size: 24px;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      margin-bottom: 2px;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      color: var(--muted);
-      font-weight: 500;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .green { color: var(--green); }
-    .yellow { color: var(--yellow); }
-    .blue { color: var(--blue); }
-
-    /* Grid */
-    .grid {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
+    /* Cards */
+    .grid { display: flex; flex-direction: column; gap: 8px; }
     .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 18px 20px;
-      display: grid;
-      grid-template-columns: 48px 1fr auto;
-      gap: 16px;
-      align-items: center;
-      transition: border-color 0.15s;
-      cursor: pointer;
-      position: relative;
-      overflow: hidden;
+      background: var(--surface); border: 1px solid var(--border); border-radius: 14px;
+      padding: 16px 18px; display: grid; grid-template-columns: 52px 1fr auto;
+      gap: 14px; align-items: center; cursor: pointer; position: relative; overflow: hidden;
+      transition: border-color .15s;
     }
-
-    .card::before {
-      content: '';
-      position: absolute;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 3px;
-      border-radius: 14px 0 0 14px;
-    }
-
-    .card.done    { border-color: #16a34a30; }
-    .card.done::before { background: var(--green); }
-
-    .card.editing { border-color: #ca930030; }
-    .card.editing::before { background: var(--yellow); }
-
-    .card.pending { border-color: var(--border); }
-    .card.pending::before { background: var(--muted2); }
-
-    .card:hover { border-color: #444; }
+    .card::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; border-radius: 14px 0 0 14px; }
+    .card.done    { border-color: #16a34a30; } .card.done::before    { background: var(--green); }
+    .card.editing { border-color: #ca930030; } .card.editing::before { background: var(--yellow); }
+    .card.scheduled { border-color: #3b82f630; } .card.scheduled::before { background: var(--blue); }
+    .card.pending { border-color: var(--border); } .card.pending::before { background: var(--muted2); }
+    .card:hover { border-color: #3a3a3a; }
 
     .week-num {
-      width: 48px;
-      height: 48px;
-      border-radius: 12px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 16px;
-      font-weight: 800;
-      flex-shrink: 0;
+      width: 52px; height: 52px; border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 14px; font-weight: 800; flex-shrink: 0; text-align: center; line-height: 1.2;
     }
-
-    .card.done    .week-num { background: #16a34a20; color: var(--green); }
-    .card.editing .week-num { background: #ca930020; color: var(--yellow); }
-    .card.pending .week-num { background: var(--muted2); color: var(--muted); }
+    .card.done     .week-num { background: #16a34a20; color: var(--green); }
+    .card.editing  .week-num { background: #ca930020; color: var(--yellow); }
+    .card.scheduled .week-num { background: #3b82f620; color: var(--blue); }
+    .card.pending  .week-num { background: var(--muted2); color: var(--muted); }
 
     .card-body { min-width: 0; }
+    .card-category { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+    .card-title { font-size: 14px; font-weight: 600; line-height: 1.35; margin-bottom: 5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .card-meta { display: flex; gap: 10px; flex-wrap: wrap; }
+    .meta-item { font-size: 12px; color: var(--muted); }
 
-    .card-category {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 4px;
-    }
+    .card-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; flex-shrink: 0; }
+    .badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; padding: 4px 10px; border-radius: 100px; white-space: nowrap; }
+    .badge.done      { background: #16a34a20; color: var(--green);  border: 1px solid #16a34a40; }
+    .badge.editing   { background: #ca930020; color: var(--yellow); border: 1px solid #ca930040; }
+    .badge.scheduled { background: #3b82f620; color: var(--blue);   border: 1px solid #3b82f640; }
+    .badge.pending   { background: var(--muted2); color: var(--muted); border: 1px solid #333; }
+    .pub-date { font-size: 12px; color: var(--muted); }
 
-    .card-title {
-      font-size: 15px;
-      font-weight: 600;
-      line-height: 1.35;
-      margin-bottom: 6px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-
-    .card-meta {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-wrap: wrap;
-    }
-
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .card-right {
-      display: flex;
-      flex-direction: column;
-      align-items: flex-end;
-      gap: 8px;
-      flex-shrink: 0;
-    }
-
-    .badge {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 11px;
-      font-weight: 700;
-      padding: 4px 10px;
-      border-radius: 100px;
-      white-space: nowrap;
-    }
-
-    .badge.done    { background: #16a34a20; color: var(--green); border: 1px solid #16a34a40; }
-    .badge.editing { background: #ca930020; color: var(--yellow); border: 1px solid #ca930040; }
-    .badge.pending { background: var(--muted2); color: var(--muted); border: 1px solid #333; }
-    .badge.scheduled { background: #3b82f620; color: var(--blue); border: 1px solid #3b82f640; }
-
-    .pub-date {
-      font-size: 12px;
-      color: var(--muted);
-      font-weight: 500;
-    }
-
-    /* Expandido */
-    .card-detail {
-      display: none;
-      grid-column: 1 / -1;
-      border-top: 1px solid var(--border);
-      margin-top: 12px;
-      padding-top: 14px;
-    }
-
+    /* Detail */
+    .card-detail { display: none; grid-column: 1 / -1; border-top: 1px solid var(--border); margin-top: 12px; padding-top: 14px; }
     .card.open .card-detail { display: block; }
-
-    .detail-section {
-      margin-bottom: 12px;
-    }
-
-    .detail-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin-bottom: 6px;
-    }
-
-    .detail-text {
-      font-size: 13px;
-      color: #bbb;
-      line-height: 1.7;
-    }
-
-    .ref-links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-top: 4px;
-    }
-
-    .ref-link {
-      display: inline-flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 12px;
-      color: var(--blue);
-      background: #3b82f610;
-      border: 1px solid #3b82f630;
-      border-radius: 8px;
-      padding: 5px 10px;
-      text-decoration: none;
-      transition: background 0.15s;
-    }
-
+    .detail-label { font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--muted); margin-bottom: 8px; }
+    .detail-section { margin-bottom: 14px; }
+    .detail-text { font-size: 13px; color: #bbb; line-height: 1.7; }
+    .ref-links { display: flex; flex-wrap: wrap; gap: 8px; }
+    .ref-link { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; color: var(--blue); background: #3b82f610; border: 1px solid #3b82f630; border-radius: 8px; padding: 5px 10px; text-decoration: none; transition: background .15s; }
     .ref-link:hover { background: #3b82f620; }
-
-    /* Status toggle */
-    .status-toggle {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .toggle-btn {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 5px 12px;
-      border-radius: 100px;
-      border: 1px solid var(--border);
-      background: transparent;
-      color: var(--muted);
-      cursor: pointer;
-      font-family: 'Inter', sans-serif;
-      transition: all 0.15s;
-    }
-
+    .status-toggle { display: flex; gap: 6px; flex-wrap: wrap; }
+    .toggle-btn { font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 100px; border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s; }
     .toggle-btn:hover { border-color: #555; color: var(--text); }
-    .toggle-btn.active-done    { background: #16a34a20; color: var(--green); border-color: #16a34a40; }
-    .toggle-btn.active-editing { background: #ca930020; color: var(--yellow); border-color: #ca930040; }
-    .toggle-btn.active-pending { background: var(--muted2); color: var(--muted); border-color: #444; }
-    .toggle-btn.active-scheduled { background: #3b82f620; color: var(--blue); border-color: #3b82f640; }
+    .toggle-btn.active-done      { background: #16a34a20; color: var(--green);  border-color: #16a34a40; }
+    .toggle-btn.active-editing   { background: #ca930020; color: var(--yellow); border-color: #ca930040; }
+    .toggle-btn.active-scheduled { background: #3b82f620; color: var(--blue);   border-color: #3b82f640; }
+    .toggle-btn.active-pending   { background: var(--muted2); color: var(--muted); border-color: #444; }
 
-    /* Divider */
-    .section-label {
-      font-size: 11px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--muted);
-      margin: 28px 0 12px;
-      display: flex;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .section-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    @media (max-width: 600px) {
-      .card { grid-template-columns: 42px 1fr; }
+    @media (max-width: 580px) {
+      .card { grid-template-columns: 44px 1fr; }
       .card-right { display: none; }
-      .card-title { white-space: normal; font-size: 14px; }
+      .card-title { white-space: normal; }
     }
   </style>
 </head>
 <body>
 <div class="wrapper">
 
-  <div class="header">
-    <div>
-      <div class="brand">Diário de um CEO</div>
-      <h1>Programação de vídeos</h1>
-    </div>
-    <div class="stats">
-      <div class="stat-box">
-        <div class="stat-num green" id="countDone">0</div>
-        <div class="stat-label">Publicados</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num yellow" id="countEditing">0</div>
-        <div class="stat-label">Em edição</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num blue" id="countScheduled">0</div>
-        <div class="stat-label">Agendados</div>
-      </div>
-      <div class="stat-box">
-        <div class="stat-num" style="color:var(--muted)" id="countPending">0</div>
-        <div class="stat-label">Pendentes</div>
-      </div>
-    </div>
+  <div class="top">
+    <div class="brand">Ivan Damha</div>
+    <h1>Programação de Conteúdo</h1>
+  </div>
+
+  <!-- Channel selector -->
+  <div class="channel-bar">
+    <button class="ch-btn c1 active" onclick="setChannel('ceo')">
+      <div class="ch-dot"></div> Diário de um CEO — Vídeos
+    </button>
+    <button class="ch-btn c2v" onclick="setChannel('ivan-videos')">
+      <div class="ch-dot"></div> Ivan Damha — Vídeos
+    </button>
+    <button class="ch-btn c2l" onclick="setChannel('ivan-lives')">
+      <div class="ch-dot"></div> Ivan Damha — Lives
+    </button>
+  </div>
+
+  <!-- Stats -->
+  <div class="stats">
+    <div class="stat-box"><div class="stat-num" id="s-done" style="color:var(--green)">0</div><div class="stat-label">Publicados</div></div>
+    <div class="stat-box"><div class="stat-num" id="s-editing" style="color:var(--yellow)">0</div><div class="stat-label">Em edição</div></div>
+    <div class="stat-box"><div class="stat-num" id="s-scheduled" style="color:var(--blue)">0</div><div class="stat-label">Agendados</div></div>
+    <div class="stat-box"><div class="stat-num" id="s-pending" style="color:var(--muted)">0</div><div class="stat-label">Pendentes</div></div>
   </div>
 
   <div class="grid" id="grid"></div>
-
 </div>
 
 <script>
-const videos = [
-  {
-    week: 1,
-    category: "Storytelling",
-    title: "Por que a maioria dos empreendedores fica presa nos R$ 30 mil por mês",
-    pubDate: "10/06/2026",
-    status: "editing",
-    refs: [
-      { label: "Hormozi — How to Scale", url: "https://m.youtube.com/watch?v=ioKjYU43vnI" },
-      { label: "Hormozi — Build a Brand", url: "https://www.youtube.com/watch?v=z8WPl1v39P8" }
-    ],
-    notes: "Já gravado. Aguardando edição até 10/06."
-  },
-  {
-    week: 2,
-    category: "Negócios",
-    title: "Os negócios chatos que estão gerando mais dinheiro no Brasil agora",
-    pubDate: "17/06/2026",
-    status: "pending",
-    refs: [
-      { label: "Codie Sanchez — $50M Boring Businesses", url: "https://www.youtube.com/watch?v=WPn6ll25Wr4" },
-      { label: "Codie Sanchez — Portfolio", url: "https://www.youtube.com/watch?v=jjFWtuFWZa8" },
-      { label: "Codie — Unsexy Businesses", url: "https://www.youtube.com/watch?v=FskTFJsLR2Y" }
-    ],
-    notes: ""
-  },
-  {
-    week: 3,
-    category: "Decisão",
-    title: "O método que fundadores de 8 dígitos usam para tomar decisões",
-    pubDate: "24/06/2026",
-    status: "pending",
-    refs: [
-      { label: "Dan Martell — Decision Framework", url: "https://danmartell.medium.com/the-one-decision-making-framework-successful-founders-use-to-avoid-decision-paralysis-4839c52c6baf" },
-      { label: "Priestley — 7-11-4", url: "https://www.goloudnow.com/podcasts/the-diary-of-a-ceo-with-steven-bartlett-836/the-money-making-expert-the-7114-hack-that-turns-1-into-10k-per-month-this-90-day-rule-will-10x-your-income-daniel-priestley-507711" }
-    ],
-    notes: ""
-  },
-  {
-    week: 4,
-    category: "Audiência",
-    title: "Por que construir audiência vale mais do que construir um produto em 2026",
-    pubDate: "01/07/2026",
-    status: "pending",
-    refs: [
-      { label: "Matt Gray — 98% of Founders", url: "https://www.youtube.com/watch?v=eySbMU08piQ" },
-      { label: "Lara Acosta — 6-figure Brand", url: "https://www.youtube.com/watch?v=-6kuAtt0q_A" },
-      { label: "Lara Acosta — LinkedIn", url: "https://www.youtube.com/watch?v=JA3aRcN0JDI" }
-    ],
-    notes: ""
-  },
-  {
-    week: 5,
-    category: "Curadoria",
-    title: "O que eu aprendi estudando os 10 maiores criadores de negócios do mundo",
-    pubDate: "08/07/2026",
-    status: "pending",
-    refs: [
-      { label: "Hormozi — Content Strategy", url: "https://www.youtube.com/watch?v=lAlBMGtcrTQ" },
-      { label: "Hormozi — Build a Brand", url: "https://www.youtube.com/watch?v=z8WPl1v39P8" },
-      { label: "Matt Gray — Founder Content System", url: "https://www.founderos.com/discover/the-founders-video-content-creation-system" }
-    ],
-    notes: ""
-  },
-  {
-    week: 6,
-    category: "Ferramentas",
-    title: "Como calcular se uma ideia de negócio vale seu tempo antes de começar",
-    pubDate: "15/07/2026",
-    status: "pending",
-    refs: [
-      { label: "Ali Abdaal — Complete Productivity System", url: "https://www.youtube.com/watch?v=tQSKyvjsUuI" },
-      { label: "Ali Abdaal — Feel-Good Productivity", url: "https://m.youtube.com/watch?v=h_TvzVO7LVk" }
-    ],
-    notes: ""
-  },
-  {
-    week: 7,
-    category: "Financeiro",
-    title: "O erro silencioso que faz negócios bons quebrarem em 3 anos",
-    pubDate: "22/07/2026",
-    status: "pending",
-    refs: [
-      { label: "Nischa — What Rich People Won't Tell You", url: "https://www.youtube.com/watch?v=Jbj7YM4KAy4" },
-      { label: "Nischa — How to Get Rich", url: "https://www.youtube.com/watch?v=bRxZYqtlZjw" }
-    ],
-    notes: ""
-  },
-  {
-    week: 8,
-    category: "Operação",
-    title: "Como sair da operação do seu negócio — o framework que realmente funciona",
-    pubDate: "29/07/2026",
-    status: "pending",
-    refs: [
-      { label: "Dan Martell — Buy Back Your Time", url: "https://www.youtube.com/watch?v=C0utf64dGsc" },
-      { label: "Dan Martell — Core Message", url: "https://www.youtube.com/watch?v=9uCkslD2KVc" },
-      { label: "Dan Martell — $100M CEO", url: "https://www.youtube.com/watch?v=YZASbr4GFzA" }
-    ],
-    notes: ""
-  },
-  {
-    week: 9,
-    category: "Financeiro",
-    title: "Holding familiar: o que é e por que você vai precisar antes do que pensa",
-    pubDate: "05/08/2026",
-    status: "pending",
-    refs: [
-      { label: "Nischa — What Rich People Won't Tell You", url: "https://www.youtube.com/watch?v=Jbj7YM4KAy4" },
-      { label: "Nischa — 3 Net Worth Milestones", url: "https://www.youtube.com/watch?v=YgzdqPJ2ixs" },
-      { label: "Nischa — Net Worth after $100K", url: "https://www.youtube.com/watch?v=F3Q-1W4QEVI" }
-    ],
-    notes: ""
-  },
-  {
-    week: 10,
-    category: "Mentalidade",
-    title: "Quanto tempo leva para um negócio gerar caixa de verdade",
-    pubDate: "12/08/2026",
-    status: "pending",
-    refs: [
-      { label: "Dan Martell — Still Broke?", url: "https://www.youtube.com/watch?v=wNJbfr-xSkY" },
-      { label: "Dan Martell — Ultimate Guide", url: "https://www.youtube.com/watch?v=hKJQWoZKc78" }
-    ],
-    notes: ""
-  }
-];
+// ─────────────────────────────────────────────
+// DADOS
+// ─────────────────────────────────────────────
+const channels = {
 
-const statusLabels = {
-  done:      { text: "✓ Publicado",  cls: "done" },
-  editing:   { text: "✂ Em edição", cls: "editing" },
-  scheduled: { text: "📅 Agendado",  cls: "scheduled" },
-  pending:   { text: "○ Pendente",   cls: "pending" }
+  'ceo': {
+    label: 'Diário de um CEO — Vídeos',
+    phases: [
+      { name: 'Bloco 1', items: [
+        { week:'S1', category:'Storytelling', title:'Por que a maioria dos empreendedores fica presa nos R$ 30 mil por mês', date:'10/06/2026', status:'editing', notes:'Gravado. Aguardando edição até 10/06.',
+          refs:[{l:'Hormozi — How to Scale',u:'https://m.youtube.com/watch?v=ioKjYU43vnI'},{l:'Hormozi — Build a Brand',u:'https://www.youtube.com/watch?v=z8WPl1v39P8'}] },
+        { week:'S2', category:'Negócios', title:'Os negócios chatos que estão gerando mais dinheiro no Brasil agora', date:'17/06/2026', status:'pending', notes:'',
+          refs:[{l:'Codie — $50M Boring Businesses',u:'https://www.youtube.com/watch?v=WPn6ll25Wr4'},{l:'Codie — Portfolio',u:'https://www.youtube.com/watch?v=jjFWtuFWZa8'},{l:'Codie — Unsexy Businesses',u:'https://www.youtube.com/watch?v=FskTFJsLR2Y'}] },
+        { week:'S3', category:'Decisão', title:'O método que fundadores de 8 dígitos usam para tomar decisões', date:'24/06/2026', status:'pending', notes:'',
+          refs:[{l:'Dan Martell — Decision Framework',u:'https://danmartell.medium.com/the-one-decision-making-framework-successful-founders-use-to-avoid-decision-paralysis-4839c52c6baf'},{l:'Priestley — 7-11-4',u:'https://www.goloudnow.com/podcasts/the-diary-of-a-ceo-with-steven-bartlett-836/the-money-making-expert-the-7114-hack-that-turns-1-into-10k-per-month-this-90-day-rule-will-10x-your-income-daniel-priestley-507711'}] },
+      ]},
+      { name: 'Bloco 2', items: [
+        { week:'S4', category:'Audiência', title:'Por que construir audiência vale mais do que construir um produto em 2026', date:'01/07/2026', status:'pending', notes:'',
+          refs:[{l:'Matt Gray — 98% of Founders',u:'https://www.youtube.com/watch?v=eySbMU08piQ'},{l:'Lara Acosta — 6-figure Brand',u:'https://www.youtube.com/watch?v=-6kuAtt0q_A'}] },
+        { week:'S5', category:'Curadoria', title:'O que eu aprendi estudando os 10 maiores criadores de negócios do mundo', date:'08/07/2026', status:'pending', notes:'',
+          refs:[{l:'Hormozi — Content Strategy',u:'https://www.youtube.com/watch?v=lAlBMGtcrTQ'},{l:'Matt Gray — Founder Content System',u:'https://www.founderos.com/discover/the-founders-video-content-creation-system'}] },
+        { week:'S6', category:'Ferramentas', title:'Como calcular se uma ideia de negócio vale seu tempo antes de começar', date:'15/07/2026', status:'pending', notes:'',
+          refs:[{l:'Ali Abdaal — Productivity System',u:'https://www.youtube.com/watch?v=tQSKyvjsUuI'},{l:'Ali Abdaal — Feel-Good Productivity',u:'https://m.youtube.com/watch?v=h_TvzVO7LVk'}] },
+      ]},
+      { name: 'Bloco 3', items: [
+        { week:'S7', category:'Financeiro', title:'O erro silencioso que faz negócios bons quebrarem em 3 anos', date:'22/07/2026', status:'pending', notes:'',
+          refs:[{l:'Nischa — What Rich People Won\'t Tell You',u:'https://www.youtube.com/watch?v=Jbj7YM4KAy4'},{l:'Nischa — How to Get Rich',u:'https://www.youtube.com/watch?v=bRxZYqtlZjw'}] },
+        { week:'S8', category:'Operação', title:'Como sair da operação do seu negócio — o framework que realmente funciona', date:'29/07/2026', status:'pending', notes:'',
+          refs:[{l:'Dan Martell — Buy Back Your Time',u:'https://www.youtube.com/watch?v=C0utf64dGsc'},{l:'Dan Martell — Core Message',u:'https://www.youtube.com/watch?v=9uCkslD2KVc'},{l:'Dan Martell — $100M CEO',u:'https://www.youtube.com/watch?v=YZASbr4GFzA'}] },
+        { week:'S9', category:'Financeiro', title:'Holding familiar: o que é e por que você vai precisar antes do que pensa', date:'05/08/2026', status:'pending', notes:'',
+          refs:[{l:'Nischa — 3 Net Worth Milestones',u:'https://www.youtube.com/watch?v=YgzdqPJ2ixs'},{l:'Nischa — Net Worth after $100K',u:'https://www.youtube.com/watch?v=F3Q-1W4QEVI'}] },
+        { week:'S10', category:'Mentalidade', title:'Quanto tempo leva para um negócio gerar caixa de verdade', date:'12/08/2026', status:'pending', notes:'',
+          refs:[{l:'Dan Martell — Still Broke?',u:'https://www.youtube.com/watch?v=wNJbfr-xSkY'},{l:'Dan Martell — Ultimate Guide',u:'https://www.youtube.com/watch?v=hKJQWoZKc78'}] },
+      ]},
+    ]
+  },
+
+  'ivan-videos': {
+    label: 'Ivan Damha — Vídeos',
+    phases: [
+      { name: 'Semana 1 — 1 a 7/06', items: [
+        { week:'V1', category:'Jurídico', title:'MEI: por que o minimercado autônomo não é MEI?', date:'Jun 2026', status:'editing', notes:'Gravado na semana 1.',refs:[] },
+        { week:'V2', category:'Financeiro', title:'Quanto custa montar um minimercado autônomo do zero?', date:'Jun 2026', status:'editing', notes:'Gravado na semana 1.',refs:[] },
+      ]},
+      { name: 'Semana 2', items: [
+        { week:'V3', category:'Operação', title:'Etiquetas de preço: como fazer certo para não perder venda', date:'Jun 2026', status:'pending', notes:'',refs:[] },
+        { week:'V4', category:'Financeiro', title:'Como funciona o retorno para o investidor no minimercado autônomo', date:'Jun 2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Semana 3', items: [
+        { week:'V5', category:'Operação', title:'Erros táticos mais comuns na operação de minimercados', date:'Jul 2026', status:'pending', notes:'',refs:[] },
+        { week:'V6', category:'Operação', title:'Como organizar o estoque para não ter ruptura', date:'Jul 2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Semana 4', items: [
+        { week:'V7', category:'Autoridade', title:'Prova social: como usar resultados de clientes para vender mais', date:'Jul 2026', status:'pending', notes:'',refs:[] },
+        { week:'V8', category:'Mentoria', title:'O que você aprende na mentoria MAM que não encontra em lugar nenhum', date:'Jul 2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Semana 5', items: [
+        { week:'V9', category:'Storytelling', title:'A história da Get and Go: como surgiu a ideia e o que aprendi', date:'Ago 2026', status:'pending', notes:'Precisa de roteiro mais desenvolvido.',refs:[] },
+      ]},
+    ]
+  },
+
+  'ivan-lives': {
+    label: 'Ivan Damha — Lives (Quartas 20h)',
+    phases: [
+      { name: 'Fase 1 — Base e Mentalidade (Jun)', items: [
+        { week:'L1',  category:'Base', title:'Por que o minimercado autônomo é o melhor negócio pra quem não tem R$ 500k pra franquia', date:'11/06/2026', status:'pending', notes:'Estreia do canal de lives.',refs:[] },
+        { week:'L2',  category:'Mentalidade', title:'A mentalidade de dono que a maioria não tem — e paga caro por isso', date:'18/06/2026', status:'pending', notes:'Antecipada para 2ª live por impacto.',refs:[] },
+        { week:'L3',  category:'Storytelling', title:'Como eu abri a Get and Go durante a pandemia quando todo mundo falava que era loucura', date:'25/06/2026', status:'pending', notes:'Live de origem. Alto potencial de descoberta.',refs:[] },
+      ]},
+      { name: 'Fase 1 — Base e Mentalidade (Jul)', items: [
+        { week:'L4',  category:'Base', title:'Quanto de verdade você precisa pra abrir o primeiro mercado', date:'02/07/2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Fase 2 — Comercial e Prospecção (Jul–Ago)', items: [
+        { week:'L5',  category:'Comercial', title:'Como prospectar condomínios do zero — o método que fechou 100 lojas', date:'09/07/2026', status:'pending', notes:'',refs:[] },
+        { week:'L6',  category:'Comercial', title:'Do contato ao contrato: o que acontece no meio que ninguém conta', date:'16/07/2026', status:'pending', notes:'',refs:[] },
+        { week:'L7',  category:'Comercial', title:'Como ganhar uma assembleia de condomínio (eu gravei uma — deixa eu te contar)', date:'23/07/2026', status:'pending', notes:'',refs:[] },
+        { week:'L8',  category:'Comercial', title:'Comercial empresarial: como entrar em empresas, hotéis e lofts', date:'30/07/2026', status:'pending', notes:'',refs:[] },
+        { week:'L9',  category:'Comercial', title:'As 10 objeções mais comuns de síndicos — e como responder cada uma', date:'06/08/2026', status:'pending', notes:'',refs:[] },
+        { week:'L10', category:'Comercial', title:'Roleplay ao vivo: como você deveria soar na primeira reunião com um síndico', date:'13/08/2026', status:'pending', notes:'Formato interativo. Alto potencial de engajamento.',refs:[] },
+      ]},
+      { name: 'Fase 3 — Estrutura e Operações (Ago–Set)', items: [
+        { week:'L11', category:'Operação', title:'O que você precisa ter antes de abrir a primeira loja (equipamentos, gôndolas, tudo)', date:'20/08/2026', status:'pending', notes:'',refs:[] },
+        { week:'L12', category:'Operação', title:'Comodato: como funciona, quando vale e quando é armadilha', date:'27/08/2026', status:'pending', notes:'',refs:[] },
+        { week:'L13', category:'Operação', title:'Operação dia a dia: como uma loja saudável funciona por dentro', date:'03/09/2026', status:'pending', notes:'',refs:[] },
+        { week:'L14', category:'Operação', title:'Sistema de gestão: o que olhar, o que ignorar, o que automatizar', date:'10/09/2026', status:'pending', notes:'',refs:[] },
+        { week:'L15', category:'Operação', title:'Picklist e picking: o erro de estoque que drena seu lucro sem você ver', date:'17/09/2026', status:'pending', notes:'',refs:[] },
+        { week:'L16', category:'Operação', title:'VM Pay e meios de pagamento: o que muda na sua operação', date:'24/09/2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Fase 4 — Financeiro e Precificação (Set–Out)', items: [
+        { week:'L17', category:'Financeiro', title:'DRE na prática: como ler o resultado do seu mercado sem ser contador', date:'01/10/2026', status:'pending', notes:'',refs:[] },
+        { week:'L18', category:'Financeiro', title:'Precificação: por que você provavelmente está cobrando errado', date:'08/10/2026', status:'pending', notes:'',refs:[] },
+        { week:'L19', category:'Financeiro', title:'Como aumentar o lucro sem abrir mais lojas', date:'15/10/2026', status:'pending', notes:'',refs:[] },
+        { week:'L20', category:'Financeiro', title:'Ruptura de estoque: o buraco que ninguém vê até perder cliente', date:'22/10/2026', status:'pending', notes:'',refs:[] },
+        { week:'L21', category:'Financeiro', title:'Tributação para minimercados — com contador convidado', date:'29/10/2026', status:'pending', notes:'Live com convidado. Aliviar peso técnico e gerar autoridade.',refs:[] },
+        { week:'L22', category:'Financeiro', title:'Aluguel vs. compra de equipamento: quanto isso impacta no seu caixa', date:'05/11/2026', status:'pending', notes:'',refs:[] },
+      ]},
+      { name: 'Fase 5 — Escala, RH e Sócios (Nov–Dez)', items: [
+        { week:'L23', category:'Escala', title:'Captação de sócio: quando faz sentido, quando é erro, como estruturar', date:'12/11/2026', status:'pending', notes:'',refs:[] },
+        { week:'L24', category:'Escala', title:'Escala: o que muda quando você passa de 3 para 10 lojas', date:'19/11/2026', status:'pending', notes:'',refs:[] },
+        { week:'L25', category:'Escala', title:'Contratando o primeiro funcionário de verdade — RH no minimercado', date:'26/11/2026', status:'pending', notes:'',refs:[] },
+        { week:'L26', category:'Escala', title:'Modelagem financeira: como planejar o próximo ano sem chute', date:'03/12/2026', status:'pending', notes:'Encerra o ciclo 2026.',refs:[] },
+      ]},
+    ]
+  }
 };
 
-function saveStatuses() {
-  const s = {};
-  videos.forEach((v, i) => s[i] = v.status);
-  localStorage.setItem('video_statuses', JSON.stringify(s));
+// ─────────────────────────────────────────────
+// STATE
+// ─────────────────────────────────────────────
+let currentChannel = 'ceo';
+
+const statusMeta = {
+  done:      { text: '✓ Publicado',  cls: 'done' },
+  editing:   { text: '✂ Em edição', cls: 'editing' },
+  scheduled: { text: '📅 Agendado',  cls: 'scheduled' },
+  pending:   { text: '○ Pendente',   cls: 'pending' }
+};
+
+function storageKey(channel, phase, idx) {
+  return `status__${channel}__${phase}__${idx}`;
 }
 
-function loadStatuses() {
-  const s = JSON.parse(localStorage.getItem('video_statuses') || '{}');
-  videos.forEach((v, i) => { if (s[i]) v.status = s[i]; });
+function loadAllStatuses() {
+  Object.entries(channels).forEach(([chKey, ch]) => {
+    ch.phases.forEach((phase, pi) => {
+      phase.items.forEach((item, ii) => {
+        const saved = localStorage.getItem(storageKey(chKey, pi, ii));
+        if (saved) item.status = saved;
+      });
+    });
+  });
 }
 
-function updateStats() {
-  document.getElementById('countDone').textContent = videos.filter(v => v.status === 'done').length;
-  document.getElementById('countEditing').textContent = videos.filter(v => v.status === 'editing').length;
-  document.getElementById('countScheduled').textContent = videos.filter(v => v.status === 'scheduled').length;
-  document.getElementById('countPending').textContent = videos.filter(v => v.status === 'pending').length;
+function saveStatus(chKey, pi, ii, status) {
+  localStorage.setItem(storageKey(chKey, pi, ii), status);
 }
 
-function renderGrid() {
+// ─────────────────────────────────────────────
+// RENDER
+// ─────────────────────────────────────────────
+function setChannel(key) {
+  currentChannel = key;
+  document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
+  const map = { ceo: 0, 'ivan-videos': 1, 'ivan-lives': 2 };
+  document.querySelectorAll('.ch-btn')[map[key]].classList.add('active');
+  render();
+}
+
+function render() {
+  const ch = channels[currentChannel];
   const grid = document.getElementById('grid');
   grid.innerHTML = '';
 
-  videos.forEach((v, i) => {
-    const sl = statusLabels[v.status];
-    const card = document.createElement('div');
-    card.className = `card ${v.status}`;
-    card.dataset.index = i;
+  let done = 0, editing = 0, scheduled = 0, pending = 0;
+  ch.phases.forEach(p => p.items.forEach(i => {
+    if (i.status === 'done') done++;
+    else if (i.status === 'editing') editing++;
+    else if (i.status === 'scheduled') scheduled++;
+    else pending++;
+  }));
+  document.getElementById('s-done').textContent = done;
+  document.getElementById('s-editing').textContent = editing;
+  document.getElementById('s-scheduled').textContent = scheduled;
+  document.getElementById('s-pending').textContent = pending;
 
-    card.innerHTML = `
-      <div class="week-num">S${v.week}</div>
-      <div class="card-body">
-        <div class="card-category">${v.category}</div>
-        <div class="card-title">${v.title}</div>
-        <div class="card-meta">
-          <div class="meta-item">📅 ${v.pubDate}</div>
-          ${v.notes ? `<div class="meta-item">📝 ${v.notes}</div>` : ''}
-        </div>
-        <div class="card-detail">
-          <div class="detail-section">
+  ch.phases.forEach((phase, pi) => {
+    const lbl = document.createElement('div');
+    lbl.className = 'phase-label';
+    lbl.textContent = phase.name;
+    grid.appendChild(lbl);
+
+    phase.items.forEach((item, ii) => {
+      const sm = statusMeta[item.status];
+      const card = document.createElement('div');
+      card.className = `card ${item.status}`;
+
+      const refsHtml = item.refs.length
+        ? `<div class="detail-section">
             <div class="detail-label">Referências para assistir antes de gravar</div>
-            <div class="ref-links">
-              ${v.refs.map(r => `<a class="ref-link" href="${r.url}" target="_blank">▶ ${r.label}</a>`).join('')}
-            </div>
+            <div class="ref-links">${item.refs.map(r => `<a class="ref-link" href="${r.u}" target="_blank">▶ ${r.l}</a>`).join('')}</div>
+           </div>`
+        : '';
+
+      const notesHtml = item.notes
+        ? `<div class="detail-section"><div class="detail-label">Notas</div><div class="detail-text">${item.notes}</div></div>`
+        : '';
+
+      const togglesHtml = Object.entries(statusMeta).map(([k, v]) =>
+        `<button class="toggle-btn ${item.status === k ? 'active-' + k : ''}"
+          onclick="changeStatus(event,'${currentChannel}',${pi},${ii},'${k}')">${v.text}</button>`
+      ).join('');
+
+      card.innerHTML = `
+        <div class="week-num">${item.week}</div>
+        <div class="card-body">
+          <div class="card-category">${item.category}</div>
+          <div class="card-title">${item.title}</div>
+          <div class="card-meta">
+            <div class="meta-item">📅 ${item.date}</div>
+            ${item.notes ? `<div class="meta-item" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">📝 ${item.notes}</div>` : ''}
           </div>
-          <div class="detail-section">
-            <div class="detail-label">Mudar status</div>
-            <div class="status-toggle">
-              ${Object.entries(statusLabels).map(([k, lbl]) =>
-                `<button class="toggle-btn ${v.status === k ? 'active-' + k : ''}"
-                  onclick="setStatus(event, ${i}, '${k}')">${lbl.text}</button>`
-              ).join('')}
+          <div class="card-detail">
+            ${refsHtml}
+            ${notesHtml}
+            <div class="detail-section">
+              <div class="detail-label">Mudar status</div>
+              <div class="status-toggle">${togglesHtml}</div>
             </div>
           </div>
         </div>
-      </div>
-      <div class="card-right">
-        <span class="badge ${sl.cls}">${sl.text}</span>
-        <span class="pub-date">${v.pubDate}</span>
-      </div>
-    `;
+        <div class="card-right">
+          <span class="badge ${sm.cls}">${sm.text}</span>
+          <span class="pub-date">${item.date}</span>
+        </div>
+      `;
 
-    card.addEventListener('click', function(e) {
-      if (e.target.closest('.toggle-btn') || e.target.closest('.ref-link')) return;
-      this.classList.toggle('open');
+      card.addEventListener('click', function(e) {
+        if (e.target.closest('.toggle-btn') || e.target.closest('.ref-link')) return;
+        this.classList.toggle('open');
+      });
+
+      grid.appendChild(card);
     });
-
-    grid.appendChild(card);
   });
-
-  updateStats();
 }
 
-function setStatus(e, index, status) {
+function changeStatus(e, chKey, pi, ii, status) {
   e.stopPropagation();
-  videos[index].status = status;
-  saveStatuses();
-  renderGrid();
-  // Reabre o card
+  channels[chKey].phases[pi].items[ii].status = status;
+  saveStatus(chKey, pi, ii, status);
+  render();
+  // Reabre o card correto
   const cards = document.querySelectorAll('.card');
-  if (cards[index]) cards[index].classList.add('open');
+  let count = 0;
+  channels[chKey].phases.forEach((p, pii) => {
+    p.items.forEach((_, iii) => {
+      if (pii === pi && iii === ii) cards[count].classList.add('open');
+      count++;
+    });
+  });
 }
 
-loadStatuses();
-renderGrid();
+loadAllStatuses();
+render();
 </script>
 </body>
 </html>
