@@ -168,6 +168,13 @@
       transition: background .15s;
     }
     .editor-finish-btn:hover { background: #14b8a630; }
+    .editor-revert-btn {
+      font-size: 11px; font-weight: 700; padding: 7px 14px; border-radius: 100px;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; font-family: 'Inter', sans-serif; white-space: nowrap; flex-shrink: 0;
+      transition: background .15s, color .15s;
+    }
+    .editor-revert-btn:hover { background: #f0f0f015; color: var(--text); }
     .editor-section-label {
       font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
       color: var(--muted); margin: 32px 0 10px;
@@ -456,6 +463,13 @@ function finishEditing(chKey, pi, ii) {
   renderAwaitingList();
 }
 
+function revertToEditing(chKey, pi, ii) {
+  channels[chKey].phases[pi].items[ii].status = 'editing';
+  saveStatus(chKey, pi, ii, 'editing');
+  renderEditor();
+  renderAwaitingList();
+}
+
 function renderEditor() {
   const list = document.getElementById('editorList');
   const items = getEditingItems();
@@ -506,6 +520,7 @@ function renderAwaitingList() {
         <div class="editor-title">${it.item.title}</div>
         <div class="editor-meta">📅 ${it.item.date}</div>
       </div>
+      <button class="editor-revert-btn" onclick="revertToEditing('${it.chKey}',${it.pi},${it.ii})">↩ Voltar para edição</button>
     `;
     list.appendChild(row);
   });
