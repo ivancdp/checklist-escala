@@ -33,10 +33,12 @@
     .ch-btn:hover { border-color: #444; color: var(--text); }
     .ch-btn.active { color: #000; border-color: transparent; }
     .ch-btn.c1.active { background: var(--text); }
+    .ch-btn.c1s.active { background: var(--teal); color: #000; }
     .ch-btn.c2v.active { background: var(--purple); color: #fff; }
     .ch-btn.c2l.active { background: var(--blue); color: #fff; }
     .ch-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
     .c1 .ch-dot  { background: var(--text); }
+    .c1s .ch-dot { background: var(--teal); }
     .c2v .ch-dot { background: var(--purple); }
     .c2l .ch-dot { background: var(--blue); }
     .ch-btn.active .ch-dot { background: rgba(255,255,255,.5); }
@@ -155,6 +157,7 @@
     .editor-grip { color: var(--muted); font-size: 18px; line-height: 1; flex-shrink: 0; cursor: grab; }
     .editor-tag { font-size: 10px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; padding: 5px 10px; border-radius: 100px; white-space: nowrap; flex-shrink: 0; }
     .editor-tag.ceo          { background: #f0f0f020; color: var(--text);   border: 1px solid #f0f0f040; }
+    .editor-tag.ceo-shorts   { background: #14b8a620; color: var(--teal);   border: 1px solid #14b8a640; }
     .editor-tag.ivan-videos  { background: #a855f720; color: var(--purple); border: 1px solid #a855f740; }
     .editor-tag.ivan-lives   { background: #3b82f620; color: var(--blue);   border: 1px solid #3b82f640; }
     .editor-body { flex: 1; min-width: 0; }
@@ -203,6 +206,9 @@
   <div class="channel-bar" id="channelBar">
     <button class="ch-btn c1 active" onclick="setChannel('ceo')">
       <div class="ch-dot"></div> Diário de um CEO — Vídeos
+    </button>
+    <button class="ch-btn c1s" onclick="setChannel('ceo-shorts')">
+      <div class="ch-dot"></div> Diário de um CEO — Shorts
     </button>
     <button class="ch-btn c2v" onclick="setChannel('ivan-videos')">
       <div class="ch-dot"></div> Ivan Damha — Vídeos
@@ -268,24 +274,46 @@ const channels = {
           refs:[{l:'Dan Martell — Decision Framework',u:'https://danmartell.medium.com/the-one-decision-making-framework-successful-founders-use-to-avoid-decision-paralysis-4839c52c6baf'},{l:'Priestley — 7-11-4',u:'https://www.goloudnow.com/podcasts/the-diary-of-a-ceo-with-steven-bartlett-836/the-money-making-expert-the-7114-hack-that-turns-1-into-10k-per-month-this-90-day-rule-will-10x-your-income-daniel-priestley-507711'}] },
       ]},
       { name: 'Bloco 2', items: [
-        { week:'S4', category:'Audiência', title:'Por que construir audiência vale mais do que construir um produto em 2026', date:'01/07/2026', status:'pending', notes:'',
+        { week:'S4', category:'Negócios', title:'O ativo que vale mais que minhas 100 lojas — e eu demorei pra perceber', date:'01/07/2026', status:'pending', notes:'',
           refs:[{l:'Matt Gray — 98% of Founders',u:'https://www.youtube.com/watch?v=eySbMU08piQ'},{l:'Lara Acosta — 6-figure Brand',u:'https://www.youtube.com/watch?v=-6kuAtt0q_A'}] },
-        { week:'S5', category:'Curadoria', title:'O que eu aprendi estudando os 10 maiores criadores de negócios do mundo', date:'08/07/2026', status:'pending', notes:'',
+        { week:'S5', category:'Hábitos', title:'5 hábitos que copiei de quem fatura 10x mais que eu', date:'08/07/2026', status:'pending', notes:'',
           refs:[{l:'Hormozi — Content Strategy',u:'https://www.youtube.com/watch?v=lAlBMGtcrTQ'},{l:'Matt Gray — Founder Content System',u:'https://www.founderos.com/discover/the-founders-video-content-creation-system'}] },
-        { week:'S6', category:'Ferramentas', title:'Como calcular se uma ideia de negócio vale seu tempo antes de começar', date:'15/07/2026', status:'pending', notes:'',
+        { week:'S6', category:'Finanças', title:'A conta de 2 minutos que evita 90% das ideias de negócio ruins', date:'15/07/2026', status:'pending', notes:'',
           refs:[{l:'Ali Abdaal — Productivity System',u:'https://www.youtube.com/watch?v=tQSKyvjsUuI'},{l:'Ali Abdaal — Feel-Good Productivity',u:'https://m.youtube.com/watch?v=h_TvzVO7LVk'}] },
       ]},
       { name: 'Bloco 3', items: [
-        { week:'S7', category:'Financeiro', title:'O erro silencioso que faz negócios bons quebrarem em 3 anos', date:'22/07/2026', status:'pending', notes:'',
+        { week:'S7', category:'Finanças', title:'O erro que quebra negócios bons em até 3 anos — e ninguém vê chegando', date:'22/07/2026', status:'pending', notes:'',
           refs:[{l:'Nischa — What Rich People Won\'t Tell You',u:'https://www.youtube.com/watch?v=Jbj7YM4KAy4'},{l:'Nischa — How to Get Rich',u:'https://www.youtube.com/watch?v=bRxZYqtlZjw'}] },
-        { week:'S8', category:'Operação', title:'Como sair da operação do seu negócio — o framework que realmente funciona', date:'29/07/2026', status:'pending', notes:'',
+        { week:'S8', category:'Mentalidade', title:'Como parei de fazer tudo sozinho (sem perder o controle do negócio)', date:'29/07/2026', status:'pending', notes:'',
           refs:[{l:'Dan Martell — Buy Back Your Time',u:'https://www.youtube.com/watch?v=C0utf64dGsc'},{l:'Dan Martell — Core Message',u:'https://www.youtube.com/watch?v=9uCkslD2KVc'},{l:'Dan Martell — $100M CEO',u:'https://www.youtube.com/watch?v=YZASbr4GFzA'}] },
-        { week:'S9', category:'Financeiro', title:'Holding familiar: o que é e por que você vai precisar antes do que pensa', date:'05/08/2026', status:'pending', notes:'',
+        { week:'S9', category:'Finanças', title:'Holding familiar: o erro que pode custar sua empresa pros seus filhos', date:'05/08/2026', status:'pending', notes:'',
           refs:[{l:'Nischa — 3 Net Worth Milestones',u:'https://www.youtube.com/watch?v=YgzdqPJ2ixs'},{l:'Nischa — Net Worth after $100K',u:'https://www.youtube.com/watch?v=F3Q-1W4QEVI'}] },
-        { week:'S10', category:'Mentalidade', title:'Quanto tempo leva para um negócio gerar caixa de verdade', date:'12/08/2026', status:'pending', notes:'',
+        { week:'S10', category:'Mentalidade', title:'Quanto tempo demora até seu negócio dar dinheiro de verdade — a resposta não é a que você quer', date:'12/08/2026', status:'pending', notes:'',
           refs:[{l:'Dan Martell — Still Broke?',u:'https://www.youtube.com/watch?v=wNJbfr-xSkY'},{l:'Dan Martell — Ultimate Guide',u:'https://www.youtube.com/watch?v=hKJQWoZKc78'}] },
-        { week:'S11', category:'Negócios', title:'Como transformar o que você sabe em um negócio de 1 milhão de reais', date:'19/08/2026', status:'editing', notes:'Gravado. Na fila de edição.',refs:[] },
+        { week:'S11', category:'Negócios', title:'Como transformei o que eu sabia em um negócio de R$1 milhão (sem inventar nada novo)', date:'19/08/2026', status:'editing', notes:'Gravado. Na fila de edição.',refs:[] },
         { week:'S12', category:'Gestão', title:'Eu demiti minha melhor vendedora. E foi a decisão certa', date:'26/08/2026', status:'editing', notes:'Gravado. Na fila de edição.',refs:[] },
+      ]},
+    ]
+  },
+
+  'ceo-shorts': {
+    label: 'Diário de um CEO — Shorts',
+    phases: [
+      { name: 'Semana de 08 a 14/06 (a partir do S1)', items: [
+        { week:'SH1', category:'Recorte', title:'O teto invisível dos R$ 30 mil', date:'11/06/2026', status:'pending', notes:'Recorte do S1 — o trecho onde você explica por que R$30 mil é um teto.',refs:[] },
+        { week:'SH2', category:'Standalone', title:'Por que ganhar mais não te tira do teto dos R$ 30 mil', date:'13/06/2026', status:'pending', notes:'Gancho derivado do S1, ideia nova em 45-60s. Hook em texto desde o segundo 1.',refs:[] },
+      ]},
+      { name: 'Semana de 15 a 21/06 (a partir do S2)', items: [
+        { week:'SH3', category:'Recorte', title:'O negócio "chato" que fatura mais que startup', date:'18/06/2026', status:'pending', notes:'Recorte do S2 — o exemplo de negócio chato que você cita.',refs:[] },
+        { week:'SH4', category:'Standalone', title:'3 negócios chatos que valem mais que startup', date:'20/06/2026', status:'pending', notes:'Lista rápida, legendas grandes estilo Codie Sanchez.',refs:[] },
+      ]},
+      { name: 'Semana de 22 a 28/06 (a partir do S3)', items: [
+        { week:'SH5', category:'Recorte', title:'Como eu decido em 10 minutos o que trava todo mundo', date:'25/06/2026', status:'pending', notes:'Recorte do S3 — o momento da decisão concreta.',refs:[] },
+        { week:'SH6', category:'Standalone', title:'A pergunta que elimina 90% das decisões travadas', date:'27/06/2026', status:'pending', notes:'1 ideia só, terminando com CTA ("comenta sua decisão travada").',refs:[] },
+      ]},
+      { name: 'Semana de 29/06 a 05/07 (a partir do S4)', items: [
+        { week:'SH7', category:'Recorte', title:'O ativo que vale mais que 100 lojas', date:'02/07/2026', status:'pending', notes:'Recorte do S4 — o momento em que você revela qual é esse ativo.',refs:[] },
+        { week:'SH8', category:'Standalone', title:'Se seu negócio sumisse hoje, o que sobraria?', date:'04/07/2026', status:'pending', notes:'Pergunta de tensão + resposta curta, CTA pra comentar.',refs:[] },
       ]},
     ]
   },
@@ -402,6 +430,7 @@ let editorOrder = [];
 
 const channelTagLabels = {
   'ceo': 'Diário de um CEO',
+  'ceo-shorts': 'Diário de um CEO (Short)',
   'ivan-videos': 'Ivan Damha',
   'ivan-lives': 'Ivan Damha (Live)'
 };
@@ -573,7 +602,7 @@ function saveEditorOrder() {
 function setChannel(key) {
   currentChannel = key;
   document.querySelectorAll('.ch-btn').forEach(b => b.classList.remove('active'));
-  const map = { ceo: 0, 'ivan-videos': 1, 'ivan-lives': 2 };
+  const map = { ceo: 0, 'ceo-shorts': 1, 'ivan-videos': 2, 'ivan-lives': 3 };
   document.querySelectorAll('.ch-btn')[map[key]].classList.add('active');
   render();
 }
