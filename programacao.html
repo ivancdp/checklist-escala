@@ -117,6 +117,14 @@
     .toggle-btn.active-editing   { background: #ca930020; color: var(--yellow); border-color: #ca930040; }
     .toggle-btn.active-scheduled { background: #3b82f620; color: var(--blue);   border-color: #3b82f640; }
     .toggle-btn.active-pending   { background: var(--muted2); color: var(--muted); border-color: #444; }
+    .card-action-row { display: flex; gap: 8px; padding-top: 8px; border-top: 1px solid var(--border); margin-top: 8px; }
+    .card-action-btn {
+      font-size: 11px; font-weight: 600; padding: 5px 12px; border-radius: 100px;
+      border: 1px solid var(--border); background: transparent; color: var(--muted);
+      cursor: pointer; font-family: 'Inter', sans-serif; transition: all .15s;
+    }
+    .card-action-btn:hover { border-color: #555; color: var(--text); }
+    .card-action-btn.danger:hover { border-color: var(--red); color: var(--red); }
 
     @media (max-width: 580px) {
       .card { grid-template-columns: 44px 1fr; }
@@ -289,7 +297,7 @@
   <!-- Add Video Modal -->
   <div class="modal-overlay" id="modalOverlay" onclick="closeAddModal(event)">
     <div class="modal">
-      <div class="modal-title">➕ Adicionar vídeo</div>
+      <div class="modal-title" id="modal-title-text">➕ Adicionar vídeo</div>
       <div class="modal-field">
         <label>Canal</label>
         <select id="m-channel" onchange="onModalChannelChange()">
@@ -339,7 +347,7 @@
       </div>
       <div class="modal-actions">
         <button class="modal-cancel" onclick="closeAddModal()">Cancelar</button>
-        <button class="modal-save" onclick="submitAddVideo()">Salvar vídeo</button>
+        <button class="modal-save" id="modal-save-btn" onclick="submitAddVideo()">Salvar vídeo</button>
       </div>
     </div>
   </div>
@@ -554,9 +562,49 @@ db.ref('addedVideos').on('value', snap => {
 // ─────────────────────────────────────────────
 // MODAL — ADICIONAR VÍDEO
 // ─────────────────────────────────────────────
+let _editingFbKey = null;
+
 function openAddModal() {
+  _editingFbKey = null;
+  document.getElementById('modal-title-text').textContent = '➕ Adicionar vídeo';
+  document.getElementById('modal-save-btn').textContent = 'Salvar vídeo';
+  document.getElementById('m-channel').value = currentChannel;
   onModalChannelChange();
   document.getElementById('modalOverlay').classList.add('open');
+}
+
+function editAddedVideo(e, fbKey) {
+  e.stopPropagation();
+  _editingFbKey = fbKey;
+  // find item in channels
+  let found = null;
+  outer: for (const [chKey, ch] of Object.entries(channels)) {
+    for (let pi = 0; pi < ch.phases.length; pi++) {
+      for (const item of ch.phases[pi].items) {
+        if (item._fbKey === fbKey) { found = { chKey, pi, item }; break outer; }
+      }
+    }
+  }
+  if (!found) return;
+  const { chKey, pi, item } = found;
+  document.getElementById('modal-title-text').textContent = '✏ Editar vídeo';
+  document.getElementById('modal-save-btn').textContent = 'Salvar alterações';
+  document.getElementById('m-channel').value = chKey;
+  onModalChannelChange();
+  document.getElementById('m-phase').value = pi;
+  document.getElementById('m-week').value = item.week === '—' ? '' : item.week;
+  document.getElementById('m-date').value = item.date;
+  document.getElementById('m-title').value = item.title;
+  document.getElementById('m-category').value = item.category;
+  document.getElementById('m-status').value = item.status;
+  document.getElementById('m-notes').value = item.notes;
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function deleteAddedVideo(e, fbKey) {
+  e.stopPropagation();
+  if (!confirm('Excluir este vídeo? Essa ação não pode ser desfeita.')) return;
+  db.ref(`addedVideos/${fbKey}`).remove();
 }
 
 function closeAddModal(e) {
@@ -591,19 +639,22 @@ function submitAddVideo() {
   const chKey = document.getElementById('m-channel').value;
   const pi    = parseInt(document.getElementById('m-phase').value);
   const entry = {
-    chKey, pi,
-    title,
+    chKey, pi, title,
     week:     document.getElementById('m-week').value.trim(),
     category: document.getElementById('m-category').value.trim(),
     date:     document.getElementById('m-date').value.trim(),
     notes:    document.getElementById('m-notes').value.trim(),
     status:   document.getElementById('m-status').value,
   };
-  db.ref('addedVideos').push(entry);
-  // reset form
+  if (_editingFbKey) {
+    db.ref(`addedVideos/${_editingFbKey}`).set(entry);
+  } else {
+    db.ref('addedVideos').push(entry);
+  }
   ['m-title','m-week','m-date','m-category','m-notes'].forEach(id =>
     document.getElementById(id).value = '');
   document.getElementById('m-status').value = 'pending';
+  _editingFbKey = null;
   document.getElementById('modalOverlay').classList.remove('open');
   setChannel(chKey);
 }
@@ -870,6 +921,11 @@ function render() {
               <div class="detail-label">Mudar status</div>
               <div class="status-toggle">${togglesHtml}</div>
             </div>
+            ${item._custom ? `
+            <div class="card-action-row">
+              <button class="card-action-btn" onclick="editAddedVideo(event,'${item._fbKey}')">✏ Editar</button>
+              <button class="card-action-btn danger" onclick="deleteAddedVideo(event,'${item._fbKey}')">🗑 Excluir</button>
+            </div>` : ''}
           </div>
         </div>
         <div class="card-right">
