@@ -178,6 +178,62 @@
       transition: background .15s, color .15s;
     }
     .editor-revert-btn:hover { background: #f0f0f015; color: var(--text); }
+
+    /* Add Video Modal */
+    .add-btn {
+      font-size: 20px; line-height: 1; width: 38px; height: 38px;
+      border-radius: 50%; border: 1px solid var(--border); background: var(--surface2);
+      color: var(--text); cursor: pointer; font-family: 'Inter', sans-serif;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .15s, border-color .15s; flex-shrink: 0;
+    }
+    .add-btn:hover { background: var(--surface); border-color: #444; }
+    .modal-overlay {
+      display: none; position: fixed; inset: 0;
+      background: rgba(0,0,0,.75); z-index: 100;
+      align-items: center; justify-content: center; padding: 20px;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface); border: 1px solid #333;
+      border-radius: 16px; padding: 28px; width: 100%; max-width: 520px;
+      max-height: 90vh; overflow-y: auto;
+    }
+    .modal-title {
+      font-size: 16px; font-weight: 800; margin-bottom: 20px; letter-spacing: -.02em;
+    }
+    .modal-field { margin-bottom: 14px; }
+    .modal-field label {
+      display: block; font-size: 11px; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: 6px;
+    }
+    .modal-field input, .modal-field select, .modal-field textarea {
+      width: 100%; background: var(--surface2); border: 1px solid #333;
+      border-radius: 8px; color: var(--text); font-family: 'Inter', sans-serif;
+      font-size: 13px; padding: 10px 12px; outline: none;
+      transition: border-color .15s;
+    }
+    .modal-field input:focus, .modal-field select:focus, .modal-field textarea:focus {
+      border-color: #555;
+    }
+    .modal-field select option { background: #1a1a1a; }
+    .modal-field textarea { resize: vertical; min-height: 72px; }
+    .modal-row { display: flex; gap: 10px; }
+    .modal-row .modal-field { flex: 1; }
+    .modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 20px; }
+    .modal-cancel {
+      padding: 9px 18px; border-radius: 100px; border: 1px solid var(--border);
+      background: transparent; color: var(--muted); cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 600;
+    }
+    .modal-cancel:hover { color: var(--text); border-color: #444; }
+    .modal-save {
+      padding: 9px 22px; border-radius: 100px; border: none;
+      background: var(--text); color: #000; cursor: pointer;
+      font-family: 'Inter', sans-serif; font-size: 13px; font-weight: 700;
+    }
+    .modal-save:hover { opacity: .85; }
+
     .editor-section-label {
       font-size: 11px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase;
       color: var(--muted); margin: 32px 0 10px;
@@ -199,6 +255,7 @@
     <div class="top-row">
       <h1>Programação de Conteúdo</h1>
       <button class="editor-toggle-btn" id="editorToggleBtn" onclick="toggleEditorPanel()">🎬 Painel do Editor</button>
+      <button class="add-btn" onclick="openAddModal()" title="Adicionar vídeo">+</button>
     </div>
   </div>
 
@@ -228,6 +285,64 @@
   </div>
 
   <div class="grid" id="grid"></div>
+
+  <!-- Add Video Modal -->
+  <div class="modal-overlay" id="modalOverlay" onclick="closeAddModal(event)">
+    <div class="modal">
+      <div class="modal-title">➕ Adicionar vídeo</div>
+      <div class="modal-field">
+        <label>Canal</label>
+        <select id="m-channel" onchange="onModalChannelChange()">
+          <option value="ceo">Diário de um CEO — Vídeos</option>
+          <option value="ceo-shorts">Diário de um CEO — Shorts</option>
+          <option value="ivan-videos">Ivan Damha — Vídeos</option>
+          <option value="ivan-lives">Ivan Damha — Lives</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Fase / Semana</label>
+        <select id="m-phase"></select>
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Identificador (ex: S13, V12)</label>
+          <input type="text" id="m-week" placeholder="Auto" />
+        </div>
+        <div class="modal-field">
+          <label>Data</label>
+          <input type="text" id="m-date" placeholder="Ex: Jul 2026" />
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>Título *</label>
+        <input type="text" id="m-title" placeholder="Título do vídeo" />
+      </div>
+      <div class="modal-row">
+        <div class="modal-field">
+          <label>Categoria</label>
+          <input type="text" id="m-category" placeholder="Ex: Finanças" />
+        </div>
+        <div class="modal-field">
+          <label>Status</label>
+          <select id="m-status">
+            <option value="pending">○ Pendente</option>
+            <option value="editing">✂ Em edição</option>
+            <option value="awaiting">🕒 Aguardando publicação</option>
+            <option value="scheduled">📅 Agendado</option>
+            <option value="done">✓ Publicado</option>
+          </select>
+        </div>
+      </div>
+      <div class="modal-field">
+        <label>Notas</label>
+        <textarea id="m-notes" placeholder="Observações, referências, contexto..."></textarea>
+      </div>
+      <div class="modal-actions">
+        <button class="modal-cancel" onclick="closeAddModal()">Cancelar</button>
+        <button class="modal-save" onclick="submitAddVideo()">Salvar vídeo</button>
+      </div>
+    </div>
+  </div>
 
   <!-- Editor panel -->
   <div class="editor-panel" id="editorPanel">
@@ -404,7 +519,93 @@ const statusMeta = {
 };
 
 function saveStatus(chKey, pi, ii, status) {
-  db.ref(`status/${chKey}/${pi}/${ii}`).set(status);
+  const item = channels[chKey].phases[pi].items[ii];
+  if (item && item._fbKey) {
+    item.status = status;
+    db.ref(`addedVideos/${item._fbKey}/status`).set(status);
+  } else {
+    db.ref(`status/${chKey}/${pi}/${ii}`).set(status);
+  }
+}
+
+// ─────────────────────────────────────────────
+// VÍDEOS ADICIONADOS (Firebase)
+// ─────────────────────────────────────────────
+function rebuildCustomVideos(data) {
+  Object.values(channels).forEach(ch =>
+    ch.phases.forEach(p => { p.items = p.items.filter(i => !i._custom); })
+  );
+  Object.entries(data || {}).forEach(([fbKey, v]) => {
+    const ch = channels[v.chKey];
+    if (!ch || !ch.phases[v.pi]) return;
+    ch.phases[v.pi].items.push({
+      week: v.week || '—', category: v.category || '', title: v.title,
+      date: v.date || '', status: v.status || 'pending', notes: v.notes || '',
+      refs: [], _custom: true, _fbKey: fbKey
+    });
+  });
+}
+
+db.ref('addedVideos').on('value', snap => {
+  rebuildCustomVideos(snap.val());
+  if (editorPanelOpen) { renderEditor(); renderAwaitingList(); } else render();
+});
+
+// ─────────────────────────────────────────────
+// MODAL — ADICIONAR VÍDEO
+// ─────────────────────────────────────────────
+function openAddModal() {
+  onModalChannelChange();
+  document.getElementById('modalOverlay').classList.add('open');
+}
+
+function closeAddModal(e) {
+  if (e && e.target !== document.getElementById('modalOverlay')) return;
+  document.getElementById('modalOverlay').classList.remove('open');
+}
+
+function onModalChannelChange() {
+  const chKey = document.getElementById('m-channel').value;
+  const sel = document.getElementById('m-phase');
+  sel.innerHTML = '';
+  (channels[chKey]?.phases || []).forEach((p, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.textContent = p.name;
+    sel.appendChild(opt);
+  });
+  suggestWeekId();
+}
+
+function suggestWeekId() {
+  const chKey = document.getElementById('m-channel').value;
+  const pi = parseInt(document.getElementById('m-phase').value) || 0;
+  const items = channels[chKey]?.phases[pi]?.items || [];
+  const last = items.filter(i => i.week && i.week !== '—').map(i => i.week).pop();
+  document.getElementById('m-week').placeholder = last ? `Após ${last}` : 'Ex: S13';
+}
+
+function submitAddVideo() {
+  const title = document.getElementById('m-title').value.trim();
+  if (!title) { document.getElementById('m-title').focus(); return; }
+  const chKey = document.getElementById('m-channel').value;
+  const pi    = parseInt(document.getElementById('m-phase').value);
+  const entry = {
+    chKey, pi,
+    title,
+    week:     document.getElementById('m-week').value.trim(),
+    category: document.getElementById('m-category').value.trim(),
+    date:     document.getElementById('m-date').value.trim(),
+    notes:    document.getElementById('m-notes').value.trim(),
+    status:   document.getElementById('m-status').value,
+  };
+  db.ref('addedVideos').push(entry);
+  // reset form
+  ['m-title','m-week','m-date','m-category','m-notes'].forEach(id =>
+    document.getElementById(id).value = '');
+  document.getElementById('m-status').value = 'pending';
+  document.getElementById('modalOverlay').classList.remove('open');
+  setChannel(chKey);
 }
 
 // Escuta mudanças em tempo real e re-renderiza
